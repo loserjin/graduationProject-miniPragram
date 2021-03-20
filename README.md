@@ -1,2 +1,2 @@
-# graduationProject-back
-毕业设计-后端
+# graduationProject-miniPragram
+毕业设计-小程序
