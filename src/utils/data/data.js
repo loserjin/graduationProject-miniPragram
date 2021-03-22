@@ -1,7 +1,0 @@
-const shoppingCart={
-    menuData:{
-        "data":{
-            
-        }
-    }
-}

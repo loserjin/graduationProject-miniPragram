@@ -26,33 +26,33 @@
         <div class="list-c">
             <!-- 商品列表分类 -->
             <scroll-view class="list-l" :scroll-y="true">
-                <div class="list-l-item " :class="{active:index===tagIndex}" v-for="(item,index) in foods" :key="index" @click="categoryClick(item,index)">
-                    <span>{{item.name}}</span>
+                <div class="list-l-item " :class="{active:index===tagIndex}" v-for="(item,index) in categorys" :key="index" @click="categoryClick(item,index)">
+                    <span>{{item.category_name}}</span>
                     <text class="list-l-count" v-if="item.count">0</text>
                 </div>
             </scroll-view>
             <!-- 商品内容选择 -->
             <scroll-view class="list-r" :scroll-y="true">
                 <div class="section">
-                    <span>{{foods[0].name}}</span>
+                    <span></span>
                 </div>
-                <div class="item-list" v-for="(cates,index) in category" :key="index">
+                <div class="item-list" v-for="(cates,index) in categorys[tagIndex].foods" :key="index">
                     <div class="item">
                         <div class="item-l">
                         <img src="" alt="">
                         </div>
                         <div class="item-r">
-                            <span class="title">{{cates.cname}}</span>
-                            <span class="description">{{cates.describe}}</span>
+                            <span class="title">{{cates.food_name}}</span>
+                            <span class="description">{{cates.food_weight}}</span>
                             <div class="item-r-bottom">
-                                <span class="price">{{cates.price}}</span>
+                                <span class="price">{{cates.food_price}}</span>
                                 <div class="change-num">
-                                    <div class="reduce-to" @click="reduceClick">
-                                        <i class="icon reduce-to-o" >-</i>
+                                    <div class="btn-reduce" @click="reduceClick(cates.food_id)">
+                                        <i>-</i>
                                     </div>
-                                    <span>{{num}}</span>
-                                    <div class="add-to" @click="addClick">
-                                        <i class="icon add-to-o">+</i>
+                                    <span class="btn-num">{{cates.num}}</span>
+                                    <div class="btn-add" @click="addClick(cates.food_id)">
+                                        <i>+</i>
                                     </div>
                                 </div>
                             </div>
@@ -65,8 +65,8 @@
         
         <!-- 下部分购物车栏 -->
         <div class="footer-c">
-            <div class="cart-img">
-                <img src="" alt="">
+            <div class="cart-img" @tap="showCart">
+                <img src="static/tabs/tableware.png" alt="">
             </div>
             <div class="cart-content">
                 <div class="total-price">
@@ -76,64 +76,71 @@
             </div>
             
         </div>
+
+        <!-- 黑背景模糊墙 -->
+        <div  class="beiJing-back" @tap="cartClose" v-if="isCart"></div>
+
+        <!-- 购物车 弹窗层 -->
+        <div class="cart-c" v-if="isCart">
+            <div class="cart-c-top">
+                <div class="top-r">购物车</div>
+                <div class="top-l">清空</div>
+            </div>
+            <scroll-view class="cart-c-list" scroll-y="true">
+                <div class="cart-list-item">
+                    <span>炒鸡蛋</span>
+                    <div class="item-view">
+                            <div class="btn-reduce">-</div>
+                            <div class="btn-num">0</div>
+                            <div class="btn-add">+</div>
+                    </div>
+                </div>
+            </scroll-view>
+        </div>
     </div>
 </template>
 
 <script>
-import {mapState,mapMutations} from 'vuex'
+import {mapState,mapMutations, mapActions} from 'vuex'
 export default {
     data() {
         return {
-            
-            tagIndex:0,
-            foods:[
-                {name:'小熟茶'},
-                {name:'小熟茶'},
-                {name:'小熟茶'},
-                {name:'小熟茶'},
-                {name:'小熟茶'},
-                {name:'小熟茶'},
-                {name:'小熟茶'},
-                {name:'小熟茶'},
-            ],
-            category:[
-                {cname:'炒鸡蛋',describe:'非常好吃',price:'35元',num:'0'},
-                {cname:'炒鸡蛋',describe:'非常好吃',price:'35元',num:'0'},
-                {cname:'炒鸡蛋',describe:'非常好吃',price:'35元',num:'0'},
-                {cname:'炒鸡蛋',describe:'非常好吃',price:'35元',num:'0'},
-                {cname:'炒鸡蛋',describe:'非常好吃',price:'35元',num:'0'},
-                {cname:'炒鸡蛋',describe:'非常好吃',price:'35元',num:'0'},
-                {cname:'炒鸡蛋',describe:'非常好吃',price:'35元',num:'0'},
-
-            ]
+            tagIndex:0, 
+            isCart:false,
         }
     },
     methods: {
         ...mapMutations(['addNum']),
+        
         categoryClick(item, index) {
             this.tagIndex = index;
-            
+            console.log(this.tagIndex)
         },
-        reduceClick(){
-            this.$store.dispatch('addNumAsyns')
-            
+        showCart(){
+            this.isCart=!this.isCart
         },
-        addClick(){
-         this.addNum()
+        cartClose(){
+            this.isCart=false
         },
+        
+    
+        reduceClick(id){
+            console.log(id)
+        },
+        addClick(id){
+            console.log(id)
+        },
+       
         toSubmit(){
             wx.navigateTo({url: '/pages/submitOrder/main'})
         }
     },
     computed:{
-       ...mapState(['num'])
+       ...mapState(['categorys'])
     },
     created() {
-        this.$request('https://api.gugudata.com/news/wxarticle','get',{
-            id:1
-        }).then((Response)=>{
-            console.log(Response.result)
-        })
+        this.$store.dispatch('getDataAsyns')   
+        
      
     },
 }
@@ -360,12 +367,7 @@ export default {
     justify-content: center;
     padding: 8rpx 12rpx;
 }
-.change-num .reduce-to,.add-to{
-    width: 35rpx;
-    border-radius: 50%;
-    border: 1rpx solid ;
-    height: 35rpx;
-}
+
 .change-num i{
     
     font-size: 35rpx;
@@ -393,6 +395,10 @@ export default {
     position: relative;
     top: -20rpx;
 }
+.footer-c .cart-img img{
+    width: 100rpx;
+    height: 100rpx;
+}
 .footer-c .cart-content{
     margin-top: 10rpx;
     margin-bottom: 30rpx;
@@ -414,5 +420,88 @@ export default {
     width: 200rpx;
     height: 100rpx;
     background: rgb(42, 149, 199);
+}
+
+
+
+/* 购物车弹出黑色背景层 */
+.beiJing-back{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 750rpx;
+    bottom: 150rpx;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 800;
+}
+
+.cart-c{
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 150rpx;
+    width: 750rpx;
+    min-height: 210rpx;
+    z-index: 850;
+    background-color: white;
+}
+.cart-c .cart-c-top{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 80rpx;
+    font-size: 28rpx;
+    background-color: rgba(240, 240, 240, 1);
+    border-bottom: 1rpx solid rgba(170, 170, 170, 170);
+}
+.cart-c .cart-c-top .top-r{
+    margin-left: 30rpx;
+}
+.cart-c .cart-c-top .top-l{
+    margin-right: 30rpx;
+}
+.cart-c-list{
+    width: 750rpx;
+    min-height: 80rpx;
+    max-height: 60vh;
+    padding-bottom: 50rpx;
+    overflow: scroll;
+}
+.cart-c-list .cart-list-item{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15rpx;
+    padding-bottom: 15rpx;
+    border-bottom: 1rpx solid rgba(170, 170, 170, 0.3);
+}
+.cart-c-list .cart-list-item span{
+    margin-left: 30rpx;
+}
+.cart-c-list .cart-list-item .item-view{
+    width: 180rpx;
+    margin-right: 30rpx;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.btn-reduce,.btn-add{
+    width: 50rpx;
+    height: 50rpx;
+    background-color: #e64340;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border-radius: 50%;
+}
+.btn-num{
+    width: 50rpxs;
+    height: 50rpx;
+    font-size: 28rpx;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 </style>
