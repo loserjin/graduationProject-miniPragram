@@ -13,19 +13,19 @@
                     <span>></span>
                 </div>
             </div>
-            <div class="detail-content" v-for="(item,index) in details" :key="index">
+            <div class="detail-content" v-for="(item,index) in myCart" :key="index">
                 <div detail-l>
                     <img src="" alt="">
                 </div>
                 <div class="detail-r">
                     <div class="detail-r-top">
-                        <span class="detail-r-name">{{item.dish_name}}</span>
-                        <span class="detail-r-price">￥{{item.dish_price}}</span>
+                        <span class="detail-r-name">{{item.food_name}}</span>
+                        <span class="detail-r-price">￥{{item.food_price}}</span>
                     </div>
                 <div class="detail-r-middle">
-                    <span>{{item.dish_weight}}克</span>
+                    <span>{{item.food_weight}}克</span>
                 </div>
-                <div class="detail-r-bottom">x{{item.dish_num}}</div>
+                <div class="detail-r-bottom">x{{item.count}}</div>
                 </div>
             </div>
             <div class="detail-bottom">
@@ -35,21 +35,22 @@
                     <span>定金：6元</span>
                 </div>
                 <div class="detail-b-total">
-                    <span>共两件商品,</span>
-                    <span>共计<span class="totalPrice">￥15</span></span>
+                    <span>共{{totalCount}}件商品,</span>
+                    <span>共计<span class="totalPrice">￥{{totalPrice}}</span></span>
                 </div>
             </div>
         </div>
         <div class="pay-btn" @click="payClick">
             <div class="top">
                 <span class="s-l">微信支付</span>
-                <span class="s-r">￥15</span>
+                <span class="s-r">￥{{totalPrice}}</span>
                 
             </div>
         </div>
     </div>
 </template>
 <script>
+import {mapGetters, mapState} from 'vuex'
 export default {
     data() {
         return {
@@ -59,35 +60,13 @@ export default {
             order_num:'10454452654654654',
             order_time:'2021-03-11 21:19:47',
             orderfinish_time:"2021-03-12 10:30:00",
-            details:[
-                {   
-                    dish_name:'白菜炖肥肉',
-                    dish_num:1,
-                    dish_price:6,
-                    dish_weight:500
-                },
-                {
-                    dish_name:'小鸡炖蘑菇',
-                    dish_num:2,
-                    dish_price:6,
-                    dish_weight:500
-                },
-                {
-                    dish_name:'白菜',
-                    dish_num:1,
-                    dish_price:2,
-                    dish_weight:500
-                }
-                ,
-                {
-                    dish_name:'例汤',
-                    dish_num:1,
-                    dish_price:2.5,
-                    dish_weight:500
-                }
-                    ]
+            details:[]
                 }
     },
+    computed:{
+        ...mapState(['myCart']),
+        ...mapGetters(['totalPrice','totalCount'])
+    }
 }
 </script>
 <style scoped>
@@ -165,6 +144,10 @@ export default {
         color: #000;
         font-size: 30rpx;
         
+    }
+    .detail-content .detail-r .detail-r-bottom{
+        font-size: 30rpx;
+        color: black;
     }
     .detail-bottom .detail-b-number{
         display: flex;

@@ -160,6 +160,7 @@ export default {
        ...mapGetters(['totalPrice','totalCount']),
        listShow(){
            if(this.totalCount===0){
+               //每次清空购物车重置isCart
                this.isCart=false
                return false
            }
@@ -169,8 +170,6 @@ export default {
     created() {
         this.$store.dispatch('getDataAsyns') 
         this.$store.commit('getDish',this.tagIndex)
-
-
     },
     beforeMount() {
         // 拿到楼层ID

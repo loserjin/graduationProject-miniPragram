@@ -49,7 +49,6 @@ export default new Vuex.Store({
         },
         //购物车中商品减少
         cartRemove(state,index){
-
             if(state.myCart[index].cartNum>1){
                 state.myCart[index].cartNum--
             }else{
@@ -67,8 +66,8 @@ export default new Vuex.Store({
     actions:{
         //获取菜单整体数据
         getDataAsyns(context){
-            var menu=shoppingCart.menuData.data
-            var categorys=menu.shop_menu.category
+            var shops=shoppingCart.menuData.data
+            var categorys=shops.shop_menu.category
             context.commit('getData',categorys)
         },
         
