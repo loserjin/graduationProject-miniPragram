@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+        <span>请选择饭堂</span>
         <div class="debtn" v-for="(item,index) in department" :key="index"  @tap="toShopping(index)">{{item.departmentfloorName}}</div>
         
     </div>
@@ -14,10 +15,10 @@ export default {
     },
     methods: {
         toShopping(index){
-            this.floorIndex=index+1
+            
             wx.navigateTo({
                 // 把当前的楼层id传到shopping页
-                url:'/pages/shopping/main?index='+this.floorIndex 
+                url:'/pages/shopping/main?index='+index 
             })
         }
     },
@@ -41,6 +42,11 @@ export default {
         justify-content: center;
         align-items: center;
     }
+    .container span{
+        height: 100rpx;
+        line-height: 100rpx;
+        color: brown;
+    }
     .debtn{
         height: 100rpx;
         width: 750rpx;
@@ -50,4 +56,5 @@ export default {
         text-align: center;
         border-radius: 15rpx;
     }
+    
 </style>

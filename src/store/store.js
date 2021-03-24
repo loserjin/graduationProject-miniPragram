@@ -65,8 +65,9 @@ export default new Vuex.Store({
     },
     actions:{
         //获取菜单整体数据
-        getDataAsyns(context){
-            var shops=shoppingCart.menuData.data
+        getDataAsyns(context,index){
+            var shops=shoppingCart.menuData.data[index]
+            console.log(shops)
             var categorys=shops.shop_menu.category
             context.commit('getData',categorys)
         },

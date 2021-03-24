@@ -110,6 +110,7 @@ export default {
         return {
             tagIndex:0, 
             isCart:false,
+            floorIndex:0
         }
     },
     methods: {
@@ -167,14 +168,17 @@ export default {
            return this.isCart
        }
     },
-    created() {
-        this.$store.dispatch('getDataAsyns') 
-        this.$store.commit('getDish',this.tagIndex)
-    },
     beforeMount() {
         // 拿到楼层ID
-        // console.log(this.$mp.query.index)
+        console.log(this.$mp.query.index)
+        this.floorIndex=this.$mp.query.index
+        console.log(this.floorIndex)
     },
+    mounted() {
+        this.$store.dispatch('getDataAsyns',this.floorIndex) 
+        this.$store.commit('getDish',this.tagIndex)
+    },
+    
 }
 </script>
 <style  scoped>
