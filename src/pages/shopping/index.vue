@@ -10,9 +10,9 @@
                 </div>
                 <div class="header-r">
                     <div class="header-r-title">
-                        <span>饭堂名字</span>
+                        <span>{{shops.shop_name}}</span>
                         <div class="title-l"></div>
-                        <span>饭堂楼层</span>
+                        <span>{{shops.floor}}楼</span>
                     </div>
                     <span class="header-r-notice">预定时间：16:00-1:00</span>
                 </div>
@@ -157,7 +157,7 @@ export default {
         }
     },
     computed:{
-       ...mapState(['categorys','myCart','dish']),
+       ...mapState(['categorys','myCart','dish','shops']),
        ...mapGetters(['totalPrice','totalCount']),
        listShow(){
            if(this.totalCount===0){
@@ -177,6 +177,7 @@ export default {
     mounted() {
         this.$store.dispatch('getDataAsyns',this.floorIndex) 
         this.$store.commit('getDish',this.tagIndex)
+        console.log(this.$store.state.shops)
     },
     
 }

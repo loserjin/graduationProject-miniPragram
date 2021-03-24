@@ -24,7 +24,8 @@ const shoppingCart = {
     menuData: {
         "data":[{
             "floorId":"1",
-            "shop_name":"鸿园一楼",
+            "floor":"一",
+            "shop_name":"鸿园",
             "shop_menu":{
                 "menu_id":"01",
                 "category":[
@@ -114,7 +115,8 @@ const shoppingCart = {
         },
         {
             "floorId":"2",
-            "shop_name":"鸿园二楼",
+            "floor":"二",
+            "shop_name":"鸿园",
             "shop_menu":{
                 "menu_id":"01",
                 "category":[

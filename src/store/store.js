@@ -6,7 +6,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state:{
-        
+        shops:[],
         //菜单分类列表
         categorys:[],
         
@@ -17,6 +17,9 @@ export default new Vuex.Store({
 
     },
     mutations:{
+        getShops(state,info){
+            state.shops=info
+        },
         //获取整体菜单
         getData(state,info){
             state.categorys=info
@@ -69,6 +72,7 @@ export default new Vuex.Store({
             var shops=shoppingCart.menuData.data[index]
             console.log(shops)
             var categorys=shops.shop_menu.category
+            context.commit('getShops',shops)
             context.commit('getData',categorys)
         },
         
