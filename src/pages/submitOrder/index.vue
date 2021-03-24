@@ -1,8 +1,8 @@
 <template>
     <div class="container">
         <div class="time">
-            <span class="tips">请选择就餐类型，进行到店就餐</span>
-            <span class="mealTime">选择就餐类型</span>
+            <span class="tips">请选择就餐时间，进行到店就餐</span>
+            <span class="mealTime">选择就餐时间</span>
             
         </div>
         <div class="detail-c">

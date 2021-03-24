@@ -36,24 +36,22 @@
                 <div class="section">
                     <span></span>
                 </div>
-                <div class="item-list" v-for="(cates,index) in categorys[tagIndex].foods" :key="index">
+                <div class="item-list" v-for="(food,index) in dish" :key="index">
                     <div class="item">
                         <div class="item-l">
                         <img src="" alt="">
                         </div>
                         <div class="item-r">
-                            <span class="title">{{cates.food_name}}</span>
-                            <span class="description">{{cates.food_weight}}</span>
+                            <span class="title">{{food.food_name}}</span>
+                            <span class="description">{{food.food_weight}}</span>
                             <div class="item-r-bottom">
-                                <span class="price">{{cates.food_price}}</span>
+                                <span class="price">{{food.food_price}}</span>
                                 <div class="change-num">
-                                    <div class="btn-reduce" @click="reduceClick(cates.food_id)">
-                                        <i>-</i>
-                                    </div>
-                                    <span class="btn-num">{{cates.num}}</span>
-                                    <div class="btn-add" @click="addClick(cates.food_id)">
-                                        <i>+</i>
-                                    </div>
+                                    <transition name="move">
+                                        <div class="btn-reduce" @tap="removeToCart(food)" v-if="food.count">-</div>
+                                    </transition>
+                                    <span class="btn-num" v-if="food.count">{{food.count}}</span>
+                                    <div class="btn-add" @tap="addToCart(food)">+</div>
                                 </div>
                             </div>
                         </div>
@@ -66,11 +64,12 @@
         <!-- 下部分购物车栏 -->
         <div class="footer-c">
             <div class="cart-img" @tap="showCart">
-                <img src="static/tabs/tableware.png" alt="">
+                <img src="/static/tabs/tableware.png" alt="">
+                <span class="countSum" v-show="totalCount">{{totalCount}}</span>
             </div>
             <div class="cart-content">
                 <div class="total-price">
-                    <span>共计：50</span>
+                    <span>￥{{totalPrice}}</span>
                 </div>
                 <button class="sub-button" @click="toSubmit">结算</button>
             </div>
@@ -78,21 +77,25 @@
         </div>
 
         <!-- 黑背景模糊墙 -->
-        <div  class="beiJing-back" @tap="cartClose" v-if="isCart"></div>
+        <div  class="beiJing-back" @tap="cartClose" v-show="listShow"></div>
 
         <!-- 购物车 弹窗层 -->
-        <div class="cart-c" v-if="isCart">
+        <div class="cart-c" v-show="listShow">
             <div class="cart-c-top">
                 <div class="top-r">购物车</div>
-                <div class="top-l">清空</div>
+                <div class="top-l" @tap="clearCart">清空</div>
             </div>
             <scroll-view class="cart-c-list" scroll-y="true">
-                <div class="cart-list-item">
-                    <span>炒鸡蛋</span>
+                <div class="cart-list-item" v-for="(item,index) in myCart" :key="index">
+                    <span>{{item.food_name}}</span>
                     <div class="item-view">
-                            <div class="btn-reduce">-</div>
-                            <div class="btn-num">0</div>
-                            <div class="btn-add">+</div>
+                            <div class="cartPrice"><span>￥{{item.food_price}}</span></div>
+                            <div class="btnUpData">
+                                <div class="btn-reduce" @tap="removeCart(item)">-</div>
+                                <div class="btn-num">{{item.count}}</div>
+                                <div class="btn-add" @tap="addCart(item)">+</div>
+                            </div>
+                            
                     </div>
                 </div>
             </scroll-view>
@@ -101,7 +104,7 @@
 </template>
 
 <script>
-import {mapState,mapMutations, mapActions} from 'vuex'
+import {mapState,mapGetters} from 'vuex'
 export default {
     data() {
         return {
@@ -110,38 +113,68 @@ export default {
         }
     },
     methods: {
-        ...mapMutations(['addNum']),
         
+        //左侧点击按钮，切换分类
         categoryClick(item, index) {
             this.tagIndex = index;
-            console.log(this.tagIndex)
+            this.$store.commit('getDish',this.tagIndex)
+            
         },
+        //点击购物车图标
         showCart(){
-            this.isCart=!this.isCart
+            //当总数量大于才切换
+            if(this.totalCount>0){
+                this.isCart=!this.isCart
+            }
         },
+        //点击黑色遮罩关闭购物车
         cartClose(){
             this.isCart=false
         },
+        // 菜品上的增加很减少
+        removeToCart(food){
+            this.$store.commit('recrementMycart',food)
+        },
+        addToCart(food){
+            this.$store.commit('incrementMycart',food)
+        },
+
+        // 购物车上的增加和减少
+        removeCart(food){
+            this.$store.commit('recrementMycart',food)
+        },
+        addCart(food){
+            this.$store.commit('incrementMycart',food)
+        },
+        clearCart(){
+            this.$store.commit('cartClear')
+        },
         
-    
-        reduceClick(id){
-            console.log(id)
-        },
-        addClick(id){
-            console.log(id)
-        },
        
         toSubmit(){
             wx.navigateTo({url: '/pages/submitOrder/main'})
         }
     },
     computed:{
-       ...mapState(['categorys'])
+       ...mapState(['categorys','myCart','dish']),
+       ...mapGetters(['totalPrice','totalCount']),
+       listShow(){
+           if(this.totalCount===0){
+               this.isCart=false
+               return false
+           }
+           return this.isCart
+       }
     },
     created() {
-        this.$store.dispatch('getDataAsyns')   
-        
-     
+        this.$store.dispatch('getDataAsyns') 
+        this.$store.commit('getDish',this.tagIndex)
+
+
+    },
+    beforeMount() {
+        // 拿到楼层ID
+        // console.log(this.$mp.query.index)
     },
 }
 </script>
@@ -390,14 +423,32 @@ export default {
 .footer-c .cart-img{
     width: 100rpx;
     height: 100rpx;
-    background: forestgreen;
+    background-color: white;
     margin: 0 30rpx;
+    border-radius: 50%;
     position: relative;
+    border: 2rpx solid #ccc;
     top: -20rpx;
 }
 .footer-c .cart-img img{
     width: 100rpx;
     height: 100rpx;
+    border-radius: 50%;
+    padding: 5rpx;
+}
+.footer-c .countSum{
+    position: fixed;
+    bottom: 130rpx;
+    left: 120rpx;
+    z-index: 991;
+    width: 40rpx;
+    height: 40rpx;
+    line-height: rpx;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 28rpx;
+    background-color: red;
+    color: white;
 }
 .footer-c .cart-content{
     margin-top: 10rpx;
@@ -464,7 +515,7 @@ export default {
 .cart-c-list{
     width: 750rpx;
     min-height: 80rpx;
-    max-height: 60vh;
+    max-height: 240rpx;
     padding-bottom: 50rpx;
     overflow: scroll;
 }
@@ -480,8 +531,15 @@ export default {
     margin-left: 30rpx;
 }
 .cart-c-list .cart-list-item .item-view{
-    width: 180rpx;
+    width: 250rpx;
     margin-right: 30rpx;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cart-c-list .cart-list-item .btnUpData{
+    width: 150rpx;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -496,6 +554,7 @@ export default {
     color: white;
     border-radius: 50%;
 }
+  
 .btn-num{
     width: 50rpxs;
     height: 50rpx;

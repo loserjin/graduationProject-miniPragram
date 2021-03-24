@@ -32,13 +32,13 @@ const shoppingCart = {
                         "category_id":"001",
                         "category_name":"清淡饮食1",
                         "foods":[
-                            {"food_id":1,"food_name":"炒鸡蛋","food_price":"4","food_weight":"400","num":0},
-                            {"food_id":2,"food_name":"炒鸡蛋","food_price":"4","food_weight":"400","num":0},
-                            {"food_id":3,"food_name":"炒鸡蛋","food_price":"4","food_weight":"400","num":0},
-                            {"food_id":4,"food_name":"炒鸡蛋","food_price":"4","food_weight":"400","num":0},
-                            {"food_id":5,"food_name":"炒鸡蛋","food_price":"4","food_weight":"400","num":0},
-                            {"food_id":6,"food_name":"炒鸡蛋","food_price":"4","food_weight":"400","num":0},
-                            {"food_id":7,"food_name":"炒鸡蛋","food_price":"4","food_weight":"400","num":0},
+                            {"food_id":1,"food_name":"炒鸡蛋","food_price":"4","food_weight":"400"},
+                            {"food_id":2,"food_name":"炒鸡蛋","food_price":"4","food_weight":"400"},
+                            {"food_id":3,"food_name":"炒鸡蛋","food_price":"4","food_weight":"400"},
+                            {"food_id":4,"food_name":"炒鸡蛋","food_price":"4","food_weight":"400"},
+                            {"food_id":5,"food_name":"炒鸡蛋","food_price":"4","food_weight":"400"},
+                            {"food_id":6,"food_name":"炒鸡蛋","food_price":"4","food_weight":"400"},
+                            {"food_id":7,"food_name":"炒鸡蛋","food_price":"4","food_weight":"400"},
                         ]
                     },
                     {

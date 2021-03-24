@@ -3,9 +3,11 @@
     <img class="image" :src="userInfo.avatarUrl" alt="">
     <button open-type="getUserInfo"  @getuserinfo="getUserInfo">获取登录信息</button>
     <p class="userName">你好{{userInfo.nickName}}</p>
-    <button class="goStudy" @tap="toDetail">
+    <button class="goStudy" @tap="toDepartment">
       <p>开始订餐</p>
     </button>
+    
+    
   </div>
 </template>
 
@@ -15,7 +17,7 @@
 export default {
   data () {
     return{
-      userInfo:{}
+      userInfo:{},
     }
     
   },
@@ -38,13 +40,13 @@ export default {
         this.handleGetUserInfo()
       }
     },
-    toDetail(){
+  
+    toDepartment(){
       wx.navigateTo({
-        url:'/pages/shopping/main'
+        url:'/pages/department/main'
       })
     }
   },
-
   beforeMount() {
     console.log("--beforeMount")
     this.handleGetUserInfo()
