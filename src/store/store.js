@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {shoppingCart} from '@/pages/shopping/data'
+import { order } from '../pages/order/data'
 
 Vue.use(Vuex)
 
@@ -9,11 +10,15 @@ export default new Vuex.Store({
         shops:[],
         //菜单分类列表
         categorys:[],
-        
         //每类菜单详情列表
         dish:[],
         //存储菜品的购物车列表
-        myCart:[]
+        myCart:[],
+
+        //存储订单列表
+        orderList:[],
+        //存储订单详情
+        orderDetail:{}
 
     },
     mutations:{
@@ -64,10 +69,23 @@ export default new Vuex.Store({
             state.myCart.forEach(food=>food.count=0)
             //移除购物车所以项
             state.myCart=[]
+        },
+
+
+        //获取订单列表
+        getOrderDate(state,info){
+            state.orderList=info
+        },
+        //获取相应的订单详情
+        getOrdetail(state,info){
+            state.orderDetail=info
         }
+
+
     },
     actions:{
         //获取菜单整体数据
+        
         getDataAsyns(context,index){
             var shops=shoppingCart.menuData.data[index]
             console.log(shops)
@@ -75,7 +93,21 @@ export default new Vuex.Store({
             context.commit('getShops',shops)
             context.commit('getData',categorys)
         },
-        
+
+
+
+        //获取订单整体数据
+        getOrderAsyns(context){
+            var orderList=order.orderList
+            console.log(orderList)
+            context.commit('getOrderDate',orderList)
+        },
+
+        getOrDetailAsyns(context,index){
+            var orderDetail=context.state.orderList[index]
+            context.commit('getOrdetail',orderDetail)
+            
+        }
         
     },
     getters:{

@@ -2,24 +2,42 @@
     <div class="order-container">
         <div class="orList-c">
             <div class="item" v-for="(item,index) in orderList" :key="index">
-                <div class="orHeader" @click="headerClick">
+                <div class="orHeader" @tap="headerClick">
                     <img src="" alt="">
                     <span class="shop-name">{{item.shop_name}}</span>
                     <i>></i>
-                    <span class="order-status">{{item.status}}</span>
+                    <span class="order-status" v-if="item.status==1">订单已完成</span>
+                    <span class="order-status" v-else-if="item.status==0">订单未完成</span>
+                    <span class="order-status" v-else>订单未支付</span>
                 </div>
-                <div class="orDetail-c" @click="orderDetail">
+                <div class="orDetail-c" @tap="orderDetail(index)">
                     <div class="detail" v-for="(itx,idx) in item.product_list" :key="idx">
                         <span class="detail-l">{{itx.dish_name}}</span>
                         <span class="detail-r">{{itx.dish_num}}</span>
                     </div>
                 </div>
                 <div class="orPrice">
-                    <span class="totalNum">共两件商品，</span>
-                    <span class="totalPrice">￥15</span>
+                    <span class="totalNum">共{{item.total_count}}件商品，</span>
+                    <span class="totalPrice">￥{{item.total_price}}</span>
                 </div>
-                <div class="orbottom" @click="headerClick">
+                <div class="orbottom"  v-if="item.status==0">
                     <div class="btn">
+                        <span>取消订单</span>
+                    </div>
+                    <div class="btn btn-s" @tap="showCode">
+                        <span>扫码就餐</span>
+                    </div>
+                </div>
+                <div class="orbottom" v-else-if="item.status==2">
+                    <div class="btn">
+                        <span>取消订单</span>
+                    </div>
+                    <div class="btn">
+                        <span>支付定金</span>
+                    </div>
+                </div>   
+                <div class="orbottom" v-else>
+                    <div class="btn"  @tap="headerClick">
                         <span>再来一单</span>
                     </div>
                 </div>               
@@ -29,58 +47,32 @@
     </div>
 </template>
 <script>
+import {mapState} from 'vuex'
 export default {
     data() {
         return {
-            orderList:[
-                {
-                    shop_name:'鸿园二楼店',
-                    status:'订单已完成',
-                    product_list:[
-                        {
-                            dish_name:'白菜炖肥肉',
-                            dish_num:1,
-                            dish_price:6
-                        },
-                        {
-                            dish_name:'小鸡炖蘑菇',
-                            dish_num:2,
-                            dish_price:6
-                        }
-                    ]
-                },
-                {
-                    shop_name:'鸿园一楼店',
-                    status:'订单未完成',
-                    product_list:[
-                        {
-                            dish_name:'小鸡炖蘑菇',
-                            dish_num:2,
-                            dish_price:6
-                        }
-                    ]
-                },
-                {
-                    shop_name:'泽园二楼店',
-                    status:'订单已完成',
-                    product_list:[
-                        {
-                            dish_name:'手撕鸡',
-                            dish_num:5,
-                            dish_price:6
-                        }
-                    ]
-                }
-            ]
+            
+            
         }
     },
     methods: {
         headerClick(){
-            wx.navigateTo({url: '/pages/shopping/main'})
+            // wx.navigateTo({url: '/pages/shopping/main'})
         },
-        orderDetail(){
-            wx.navigateTo({url: '/pages/orderDetail/main'})
+        orderDetail(index){
+            wx.navigateTo({
+                url: '/pages/orderDetail/main?index='+index
+                })
         }
+       
+    },
+    computed:{
+        ...mapState(['orderList'])
+    },
+    mounted() {
+        
+    
+        this.$store.dispatch('getOrderAsyns')
     },
 }
 </script>
@@ -179,7 +171,10 @@ export default {
         justify-content: center;
         border: 2rpx solid #e4e4e4;
         margin: 20rpx;
-        border-radius: 4rpx;
+        border-radius: 15rpx;
+    }
+    .btn-s{
+        color: red;
     }
     .orbottom .btn span{
         font-size: 28rpx;

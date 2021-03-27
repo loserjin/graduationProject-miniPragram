@@ -6,6 +6,9 @@ import axios from 'axios'
 import qs from 'qs'
 import req from "./utils/axios";
 
+import fly from './utils/request'
+
+Vue.prototype.$fly = fly
 
 Vue.prototype.$req = req;//设置原型，方便在全局中随时使用
 Vue.prototype.$axios = axios;

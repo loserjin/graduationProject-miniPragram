@@ -1,17 +1,19 @@
 <template>
     <div class="container">
         <div class="detail-status">
-            <span>{{status}}</span>
+            <span v-if="orderDetail.status==1">订单已完成</span>
+            <span v-else-if="orderDetail.status==0">订单未完成</span>
+            <span v-else>订单未支付</span>
         </div>
         <div class="detail-c">
             <div class="detail-top">
                 <img src="" alt="">
                 <div class="top-r">
-                    <span>{{shop_name}}</span>
+                    <span>{{orderDetail.shop_name}}</span>
                     <span>></span>
                 </div>
             </div>
-            <div class="detail-content" v-for="(item,index) in details" :key="index">
+            <div class="detail-content" v-for="(item,index) in orderDetail.product_list" :key="index">
                 <div detail-l>
                     <img src="" alt="">
                 </div>
@@ -28,56 +30,38 @@
             </div>
             <div class="detail-bottom">
                 <div class="detail-b-number">
-                    <span>订单号码：{{order_num}}</span>
-                    <span>订单时间：{{order_time}}</span>
-                    <span>完成订单时间：{{orderfinish_time}}</span>
+                    <span>订单号码：{{orderDetail.order_num}}</span>
+                    <span>订单时间：{{orderDetail.order_time}}</span>
+                    <span>完成订单时间：{{orderDetail.orderfinish_time}}</span>
                 </div>
                 <div class="detail-b-total">
-                    <span>共两件商品,</span>
-                    <span>共计<span class="totalPrice">￥15</span></span>
+                    <span>共{{orderDetail.total_count}}件商品,</span>
+                    <span>共计<span class="totalPrice">￥{{orderDetail.total_price}}</span></span>
                 </div>
             </div>
         </div>
     </div>
 </template>
 <script>
+import {mapState} from 'vuex'
 export default {
     data() {
         return {
-            message:1,
-            status:'订单已完成',
-            shop_name:'鸿园二楼店',
-            order_num:'10454452654654654',
-            order_time:'2021-03-11 21:19:47',
-            orderfinish_time:"2021-03-12 10:30:00",
-            details:[
-                {   
-                    dish_name:'白菜炖肥肉',
-                    dish_num:1,
-                    dish_price:6,
-                    dish_weight:500
-                },
-                {
-                    dish_name:'小鸡炖蘑菇',
-                    dish_num:2,
-                    dish_price:6,
-                    dish_weight:500
-                },
-                {
-                    dish_name:'白菜',
-                    dish_num:1,
-                    dish_price:2,
-                    dish_weight:500
-                }
-                ,
-                {
-                    dish_name:'例汤',
-                    dish_num:1,
-                    dish_price:2.5,
-                    dish_weight:500
-                }
-                    ]
-                }
+        }
+    },
+    computed:{
+        ...mapState(['orderDetail'])
+    },
+    beforeMount() {
+        // console.log(this.$mp.query.index)
+        this.orderIndex=this.$mp.query.index
+        // console.log(this.orderIndex)
+        
+        
+    },
+    mounted() {
+        //获取对应的订单详情
+        this.$store.dispatch('getOrDetailAsyns',this.orderIndex)
     },
 }
 </script>
