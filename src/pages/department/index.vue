@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <span>请选择饭堂</span>
-        <div class="debtn" v-for="(item,index) in department" :key="index"  @tap="toShopping(index)">{{item.departmentfloorName}}</div>
+        <div class="debtn" v-for="(item,index) in departments" :key="index"  @tap="toShopping(item.departmentfloorId)">{{item.departmentfloorName}}</div>
         
     </div>
 </template>
@@ -9,23 +9,24 @@
 export default {
     data() {
         return {
-            tapIndex:0,
-            department:[],
+            departments:[],
         }
     },
     methods: {
-        toShopping(index){
-            
+        toShopping(id){
+            this.$store.commit('getDepartment',id)
             wx.navigateTo({
                 // 把当前的楼层id传到shopping页
-                url:'/pages/shopping/main?index='+index 
+                url:'/pages/shopping/main?id='+id 
+
             })
         }
     },
     created() {
-        this.$req.get('rap2api.taobao.org/app/mock/278438/departmentfloor/infos')
+        this.$fly.get('http://159.75.3.52:8089/departmentfloor/infos')
         .then(res=>{
-            this.department=res.data.data.records
+            this.departments=res.data.data.records
+            this.$store.commit('getDepartments',this.departments)
         })
     },
 

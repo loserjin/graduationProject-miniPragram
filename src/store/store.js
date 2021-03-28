@@ -1,38 +1,64 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import {shoppingCart} from '@/pages/shopping/data'
+
+
 import { order } from '../pages/order/data'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
     state:{
-        shops:[],
+        //department
+        //饭堂全部名单
+        departments:[],
+        //选择饭堂信息
+        department:[],
+
+        //shopping
         //菜单分类列表
-        categorys:[],
+        goods:[],
         //每类菜单详情列表
-        dish:[],
+        foods:[],
         //存储菜品的购物车列表
         myCart:[],
 
+        //order
         //存储订单列表
         orderList:[],
         //存储订单详情
-        orderDetail:{}
+        orderDetail:{},
+
+
 
     },
     mutations:{
-        getShops(state,info){
-            state.shops=info
+        //department
+        //获取全部饭堂名单
+        getDepartments(state,arr){
+            state.departments=arr
+            console.log(state.departments)
         },
-        //获取整体菜单
-        getData(state,info){
-            state.categorys=info
+        //获取全部饭堂名单
+        getDepartment(state,id){
+            var department=state.departments.filter((item=>{
+                return item.departmentfloorId==id
+            }))
+            state.department=department[0]
+            console.log(state.department)  
+        },
+
+
+
+        //shopping
+        // 获取整体菜单
+        getGoods(state,info){ 
+            state.goods=info  
         },
         // 获取菜单数组
-        getDish(state,index){
-            var dish=state.categorys[index].foods
-            state.dish=dish
+        getfoods(state,index){
+            var foods=state.goods[index].menucomponents
+            console.log(foods)
+            state.foods=foods
         },
         //菜单中的增加减少功能
         incrementMycart(state,food){
@@ -71,7 +97,7 @@ export default new Vuex.Store({
             state.myCart=[]
         },
 
-
+        //order
         //获取订单列表
         getOrderDate(state,info){
             state.orderList=info
@@ -79,23 +105,34 @@ export default new Vuex.Store({
         //获取相应的订单详情
         getOrdetail(state,info){
             state.orderDetail=info
-        }
+        },
+        
 
+        
+        
+        
 
     },
     actions:{
-        //获取菜单整体数据
-        
-        getDataAsyns(context,index){
-            var shops=shoppingCart.menuData.data[index]
-            console.log(shops)
-            var categorys=shops.shop_menu.category
-            context.commit('getShops',shops)
-            context.commit('getData',categorys)
+        //shopping
+        //获取全部饭堂整体菜单数据
+        getGoodByIdAsyns(context,arr){
+            var goods=arr
+            context.commit('getGoods',goods)
         },
 
+        //根据departmentId获取对应饭堂菜单
+        selGoodByIdAsyns(context,id){
+            if(context.state.goods){
+                var data=context.state.goods.filter((item)=>{
+                    return item.departmentfloorId===id
+                })
+            }
+            context.commit('getGoods',data)
+            console.log(data)
+        },
 
-
+        //order
         //获取订单整体数据
         getOrderAsyns(context){
             var orderList=order.orderList
@@ -107,7 +144,15 @@ export default new Vuex.Store({
             var orderDetail=context.state.orderList[index]
             context.commit('getOrdetail',orderDetail)
             
-        }
+        },
+
+
+
+        
+
+        
+
+
         
     },
     getters:{
@@ -120,7 +165,7 @@ export default new Vuex.Store({
         //购物车总价显示
         totalPrice(state){
             return state.myCart.reduce((preTotal,food)=>
-                preTotal+food.count*food.food_price,0
+                preTotal+food.count*food.componentMoney,0
             )
         },
     

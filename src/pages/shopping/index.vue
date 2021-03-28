@@ -10,9 +10,9 @@
                 </div>
                 <div class="header-r">
                     <div class="header-r-title">
-                        <span>{{shops.shop_name}}</span>
+                        <span>{{department.departmentName}}</span>
                         <div class="title-l"></div>
-                        <span>{{shops.floor}}楼</span>
+                        <span>{{department.departmentfloorName}}</span>
                     </div>
                     <span class="header-r-notice">预定时间：16:00-1:00</span>
                 </div>
@@ -26,9 +26,9 @@
         <div class="list-c">
             <!-- 商品列表分类 -->
             <scroll-view class="list-l" :scroll-y="true">
-                <div class="list-l-item " :class="{active:index===tagIndex}" v-for="(item,index) in categorys" :key="index" @click="categoryClick(item,index)">
-                    <span>{{item.category_name}}</span>
-                    <text class="list-l-count" v-if="item.count">0</text>
+                <div class="list-l-item" :class="{active:index===tagIndex}" v-for="(item,index) in goods" :key="index" @click="categoryClick(item,index)">
+                    <span>{{item.typeName}}</span>
+                    
                 </div>
             </scroll-view>
             <!-- 商品内容选择 -->
@@ -36,16 +36,16 @@
                 <div class="section">
                     <span></span>
                 </div>
-                <div class="item-list" v-for="(food,index) in dish" :key="index">
+                <div class="item-list" v-for="(food,index) in foods" :key="index">
                     <div class="item">
                         <div class="item-l">
                         <img src="" alt="">
                         </div>
                         <div class="item-r">
-                            <span class="title">{{food.food_name}}</span>
-                            <span class="description">{{food.food_weight}}</span>
+                            <span class="title">{{food.menuName}}</span>
+                            <span class="description">{{food.componentName}}</span>
                             <div class="item-r-bottom">
-                                <span class="price">{{food.food_price}}</span>
+                                <span class="price">{{food.componentMoney}}</span>
                                 <div class="change-num">
                                     <transition name="move">
                                         <div class="btn-reduce" @tap="removeToCart(food)" v-if="food.count">-</div>
@@ -87,9 +87,9 @@
             </div>
             <scroll-view class="cart-c-list" scroll-y="true">
                 <div class="cart-list-item" v-for="(item,index) in myCart" :key="index">
-                    <span>{{item.food_name}}</span>
+                    <span>{{item.menuName}}</span>
                     <div class="item-view">
-                            <div class="cartPrice"><span>￥{{item.food_price}}</span></div>
+                            <div class="cartPrice"><span>￥{{item.componentMoney}}</span></div>
                             <div class="btnUpData">
                                 <div class="btn-reduce" @tap="removeCart(item)">-</div>
                                 <div class="btn-num">{{item.count}}</div>
@@ -110,7 +110,8 @@ export default {
         return {
             tagIndex:0, 
             isCart:false,
-            floorIndex:0
+            floorId:0,
+            f1:[]
         }
     },
     methods: {
@@ -118,7 +119,7 @@ export default {
         //左侧点击按钮，切换分类
         categoryClick(item, index) {
             this.tagIndex = index;
-            this.$store.commit('getDish',this.tagIndex)
+            this.$store.commit('getfoods',this.tagIndex)
             
         },
         //点击购物车图标
@@ -157,7 +158,7 @@ export default {
         }
     },
     computed:{
-       ...mapState(['categorys','myCart','dish','shops']),
+       ...mapState(['myCart','foods','goods','department']),
        ...mapGetters(['totalPrice','totalCount']),
        listShow(){
            if(this.totalCount===0){
@@ -170,14 +171,23 @@ export default {
     },
     beforeMount() {
         // 拿到楼层ID
-        console.log(this.$mp.query.index)
-        this.floorIndex=this.$mp.query.index
-        console.log(this.floorIndex)
+        console.log(this.$mp.query.id)
+        this.floorId=parseInt(this.$mp.query.id)
+        
     },
     mounted() {
-        this.$store.dispatch('getDataAsyns',this.floorIndex) 
-        this.$store.commit('getDish',this.tagIndex)
-        console.log(this.$store.state.shops)
+        this.$fly.get('http://159.75.3.52:8089/menu/infos')
+        .then(res=>{
+            this.f1=res.data.data.records
+            this.$store.dispatch('getGoodByIdAsyns',this.f1)
+            if(this.floorId!=0){
+                this.$store.dispatch('selGoodByIdAsyns',this.floorId)
+            }
+            this.$store.commit('getfoods',this.tagIndex)
+        })
+        
+
+        
     },
     
 }

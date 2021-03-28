@@ -9,7 +9,7 @@
             <div class="detail-top">
                 <img src="" alt="">
                 <div class="top-r">
-                    <span>{{shop_name}}</span>
+                    <span>{{department.departmentfloorName}}</span>
                     <span>></span>
                 </div>
             </div>
@@ -19,11 +19,11 @@
                 </div>
                 <div class="detail-r">
                     <div class="detail-r-top">
-                        <span class="detail-r-name">{{item.food_name}}</span>
-                        <span class="detail-r-price">￥{{item.food_price}}</span>
+                        <span class="detail-r-name">{{item.menuName}}</span>
+                        <span class="detail-r-price">￥{{item.componentMoney}}</span>
                     </div>
                 <div class="detail-r-middle">
-                    <span>{{item.food_weight}}克</span>
+                    <span>{{item.componentName}}</span>
                 </div>
                 <div class="detail-r-bottom">x{{item.count}}</div>
                 </div>
@@ -64,7 +64,7 @@ export default {
                 }
     },
     computed:{
-        ...mapState(['myCart']),
+        ...mapState(['myCart','department']),
         ...mapGetters(['totalPrice','totalCount'])
     }
 }
