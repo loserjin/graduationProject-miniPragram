@@ -1,4 +1,5 @@
 <script>
+
 export default {
   created () {
     // 调用API从本地缓存中获取数据
@@ -31,6 +32,8 @@ export default {
 </script>
 
 <style>
+
+
   page{
     background-color: #f4f4f4;
     box-sizing: border-box;

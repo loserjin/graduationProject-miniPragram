@@ -26,7 +26,7 @@
         <div class="list-c">
             <!-- 商品列表分类 -->
             <scroll-view class="list-l" :scroll-y="true">
-                <div class="list-l-item" :class="{active:index===tagIndex}" v-for="(item,index) in goods" :key="index" @click="categoryClick(item,index)">
+                <div class="list-l-item" :class="{active:index===tagIndex}" v-for="(item,index) in type" :key="index" @click="categoryClick(item.typeId,index)">
                     <span>{{item.typeName}}</span>
                     
                 </div>
@@ -34,24 +34,24 @@
             <!-- 商品内容选择 -->
             <scroll-view class="list-r" :scroll-y="true">
                 <div class="section">
-                    <span></span>
+                    <span>{{typeName}}</span>
                 </div>
-                <div class="item-list" v-for="(food,index) in foods" :key="index">
+                <div class="item-list" v-for="(item,index) in food" :key="index" @click=showFood(item)>
                     <div class="item">
                         <div class="item-l">
-                        <img src="" alt="">
+                            <img src="" alt="">
                         </div>
                         <div class="item-r">
-                            <span class="title">{{food.menuName}}</span>
-                            <span class="description">{{food.componentName}}</span>
+                            <span class="title">{{item.menuName}}</span>
+                            <span class="description">{{item.menuFMoney}}</span>
                             <div class="item-r-bottom">
-                                <span class="price">{{food.componentMoney}}</span>
+                                <span class="price">{{item.menuMoney}}</span>
                                 <div class="change-num">
-                                    <transition name="move">
-                                        <div class="btn-reduce" @tap="removeToCart(food)" v-if="food.count">-</div>
-                                    </transition>
-                                    <span class="btn-num" v-if="food.count">{{food.count}}</span>
-                                    <div class="btn-add" @tap="addToCart(food)">+</div>
+                                    <div class="btn-reduce" @click.stop="removeToCart(item)" v-if="item.count">
+                                        <i class="iconfont">&#xe6b8;</i>
+                                    </div>
+                                    <span class="btn-num" v-if="item.count">{{item.count}}</span>
+                                    <div class="btn-add" @click.stop="addToCart(item)"><i class="iconfont">&#xe602;</i></div>
                                 </div>
                             </div>
                         </div>
@@ -63,42 +63,69 @@
         
         <!-- 下部分购物车栏 -->
         <div class="footer-c">
-            <div class="cart-img" @tap="showCart">
-                <img src="/static/tabs/tableware.png" alt="">
+            <div class="cart-img" @click="showCart">
+                <i class="iconfont" :class="{cartActive:isCart===true}">&#xe601;</i>
                 <span class="countSum" v-show="totalCount">{{totalCount}}</span>
             </div>
             <div class="cart-content">
                 <div class="total-price">
                     <span>￥{{totalPrice}}</span>
+                    <span class="fprice">定金:￥{{totalFPrice}}</span>
                 </div>
-                <button class="sub-button" @click="toSubmit">结算</button>
+                <button class="sub-button"  @click="toSubmit" :disabled="isabled" >结算</button>
             </div>
             
         </div>
 
         <!-- 黑背景模糊墙 -->
-        <div  class="beiJing-back" @tap="cartClose" v-show="listShow"></div>
+        <div  class="beiJing-back" @click="cartClose" v-show="listShow"></div>
 
         <!-- 购物车 弹窗层 -->
         <div class="cart-c" v-show="listShow">
             <div class="cart-c-top">
                 <div class="top-r">购物车</div>
-                <div class="top-l" @tap="clearCart">清空</div>
+                <div class="top-l" @click="clearCart">清空</div>
             </div>
             <scroll-view class="cart-c-list" scroll-y="true">
                 <div class="cart-list-item" v-for="(item,index) in myCart" :key="index">
                     <span>{{item.menuName}}</span>
                     <div class="item-view">
-                            <div class="cartPrice"><span>￥{{item.componentMoney}}</span></div>
+                            <div class="cartPrice"><span>￥{{item.menuMoney}}</span></div>
                             <div class="btnUpData">
-                                <div class="btn-reduce" @tap="removeCart(item)">-</div>
+                                <div class="btn-reduce" @click="removeCart(item)"><i class="iconfont">&#xe6b8;</i></div>
                                 <div class="btn-num">{{item.count}}</div>
-                                <div class="btn-add" @tap="addCart(item)">+</div>
-                            </div>
-                            
+                                <div class="btn-add" @click="addCart(item)"><i class="iconfont">&#xe602;</i></div>
+                            </div>   
                     </div>
                 </div>
             </scroll-view>
+        </div>
+        
+
+        <!-- 菜品详情 -->
+        <div class="previewModal" v-if="isShow">
+            <div class="modal-c">
+            <div class="header-p">
+                <img class="item-img" src="" alt="">
+                <span class="title">{{foodModal.menuName}}</span>
+                <div>
+                <span class="desc" v-for="(item,i) in foodModal.menucomponents" :key="i">{{item.componentName}}</span>
+                </div>
+            </div>
+            
+            <div class="footer-p">
+                <span class="price">￥{{foodModal.menuMoney}}</span>
+                <div class="upBtn">
+                    <div class="btn-reduce" @click="removeCart(foodModal)" v-if="foodModal.count"><i class="iconfont">&#xe6b8;</i></div>
+                    <span class="btn-num" v-if="foodModal.count">{{foodModal.count}}</span>
+                    <div class="btn-add" @click="addCart(foodModal)"><i class="iconfont">&#xe602;</i></div>
+                </div>
+            </div>
+            </div>
+            <!-- <div class="food-cover" @click="toggleShow"> -->
+            <div class="cancle" @click="closePreview">
+                <i class="iconfont">&#xe605;</i>
+            </div>
         </div>
     </div>
 </template>
@@ -108,19 +135,45 @@ import {mapState,mapGetters} from 'vuex'
 export default {
     data() {
         return {
+            // 当前饭堂信息
+            isabled:true,
+            department:{},
             tagIndex:0, 
+            //购物车显示
             isCart:false,
+            //详情显示
+            isShow: false,
             floorId:0,
-            f1:[]
+            typeId:0,
+            typeName:null,
+            type:[],
+            goods:[],
+            // 全部food
+            foods:[],
+            // 分好类的food
+            food:[],
+            // 点击传的food
+            foodModal:[]
         }
     },
-    methods: {
-        
+    methods: { 
         //左侧点击按钮，切换分类
-        categoryClick(item, index) {
+        categoryClick(id, index) {
             this.tagIndex = index;
-            this.$store.commit('getfoods',this.tagIndex)
-            
+            this.food=this.filterFoods(this.foods,id)
+            this.typeName=this.type[index].typeName     
+        },
+        //点击切换菜品详情显示状态
+        toggleShow () {
+            this.isShow = !this.isShow
+        },
+        showFood(item){
+            this.foodModal=item
+            this.toggleShow()
+        },
+        //关闭显示菜品详情
+        closePreview() {
+            this.isShow=false
         },
         //点击购物车图标
         showCart(){
@@ -140,7 +193,6 @@ export default {
         addToCart(food){
             this.$store.commit('incrementMycart',food)
         },
-
         // 购物车上的增加和减少
         removeCart(food){
             this.$store.commit('recrementMycart',food)
@@ -150,16 +202,27 @@ export default {
         },
         clearCart(){
             this.$store.commit('cartClear')
-        },
-        
-       
+        },   
         toSubmit(){
-            wx.navigateTo({url: '/pages/submitOrder/main'})
+            wx.navigateTo({url: '/pages/submitOrder/main'}) 
+        },
+        filterType(arr,id){
+            var newArr=arr.filter((item)=>{
+                return item.departmentfloorId==id
+            })
+            return newArr
+        },
+        filterFoods(arr,id){
+            var newArr2=arr.filter((item)=>{
+                return item.typeId==id
+            })
+            return newArr2
         }
+
     },
     computed:{
-       ...mapState(['myCart','foods','goods','department']),
-       ...mapGetters(['totalPrice','totalCount']),
+       ...mapState(['myCart']),
+       ...mapGetters(['totalPrice','totalCount','totalFPrice']),
        listShow(){
            if(this.totalCount===0){
                //每次清空购物车重置isCart
@@ -167,39 +230,73 @@ export default {
                return false
            }
            return this.isCart
+       },
+       btn(){
+           if(this.totalCount>0){
+               this.isabled=false
+               return false
+           }else{
+               this.isabled=true
+               return true
+           }
        }
+    },
+    onUnload(){
+        this.$store.commit('cartClear')
     },
     beforeMount() {
         // 拿到楼层ID
-        console.log(this.$mp.query.id)
-        this.floorId=parseInt(this.$mp.query.id)
+        // console.log(this.$mp.query.id)
+        var that=this
+        if(this.$mp.query.id){
+            this.floorId=parseInt(this.$mp.query.id)
+        }else{
+            wx.getStorage({
+                key: 'key',
+                success: function(res){
+                    // success
+                    that.floorId=res.data
+                    console.log(that.floorId)      
+                }
+            })
+        }
+        wx.getStorage({
+                key: 'item',
+                success: function(res){
+                    // success
+                    console.log(res)
+                   that.department=res.data  
+
+                }
+            })
         
     },
-    mounted() {
-        this.$fly.get('http://159.75.3.52:8089/menu/infos')
+    mounted() {       
+        this.$fly.get('http://159.75.3.52:8089/type/infos?size=99')
         .then(res=>{
-            this.f1=res.data.data.records
-            this.$store.dispatch('getGoodByIdAsyns',this.f1)
-            if(this.floorId!=0){
-                this.$store.dispatch('selGoodByIdAsyns',this.floorId)
+            this.type=this.filterType(res.data.data.records,this.floorId)
+            if(this.type.length>0){
+                this.typeId=this.type[0].typeId
+                this.typeName=this.type[0].typeName 
             }
-            this.$store.commit('getfoods',this.tagIndex)
+            
         })
-        
-
-        
+        this.$fly.get('http://159.75.3.52:8089/menu/infos?size=99')
+        .then(res=>{
+            this.goods=res.data.data.records
+            if(this.goods){
+                var data=this.goods.filter((item)=>{
+                    return item.departmentfloorId===this.floorId
+                })
+                this.foods=data
+                this.food=this.filterFoods(this.foods,this.typeId) 
+            }  
+        })
     },
     
 }
 </script>
 <style  scoped>
-
-
-
-
-
-
-
 .container{
     display: flex;
     flex-direction: column;
@@ -215,7 +312,7 @@ export default {
 .header-c .header{
     display: flex;
     align-items: center;
-    background-color: rgba(199, 140, 31, 0.473);
+    background: #1296db;
     height: 150rpx;
 }
 .header-c .header-l{
@@ -237,7 +334,7 @@ export default {
     display: flex;
     align-items: center;
     font-size: 40rpx;
-    color: white;
+    color: black;
 }
 .header-c .header-r .header-r-title .title-l{
     margin: 0 20rpx;
@@ -246,7 +343,7 @@ export default {
 }
 .header-c .header-r .header-r-notice{
     font-size: 30rpx;
-    color: white;
+    color: black;
     line-height: 30rpx;
     height: 30rpx;
     overflow: hidden;
@@ -335,7 +432,7 @@ export default {
 .list-c .list-r{
     display: flex;
     flex-direction: column;
-    background-color: aqua;
+    background-color: #fff;
     
 } 
 .list-c .list-r .section{
@@ -343,7 +440,7 @@ export default {
     height: 70rpx;
     align-items: center;
     margin-left: 20rpx;
-    background: chocolate;
+    background: #ccc;
 }
 .list-c .list-r .section span{
     font-size: 30rpx;
@@ -352,23 +449,22 @@ export default {
 
 .list-c .list-r .item-list{
     display: flex;
-    background-color: blueviolet;
     flex-direction: column;
-    margin: 0 20rpx;
+    justify-items: center;
+    margin: 10rpx 20rpx;
+    border-bottom: 2rpx solid #ccc ;
     
 }
 .item-list .item{
     display: flex;
-    margin-bottom: 30rpx;
-    background: rgb(233, 224, 224);
-    
-    
+    justify-content: center;
+    align-items: center;
 }
 .item .item-l img{
     width: 160rpx;
     height: 160rpx;
     background-size: cover;
-    background: burlywood;
+    background: green;
 }
 .item .item-r{
     display: flex;
@@ -376,6 +472,8 @@ export default {
     margin-left: 20rpx;
     justify-content: space-between;
     width: 370rpx;
+    background: #fff;
+    
 }
 .item .item-r .title{
     font-size: 30rpx;
@@ -425,36 +523,40 @@ export default {
 }
 .footer-c{
     position: fixed;
-    z-index: 990;
+    z-index: 860;
     width: 100%;
     bottom: 0;
     height: 150rpx;
     widows: 750rpx;
-    background: #333;
+    background: #9ca8b8;
     display: flex;
     
 }
 .footer-c .cart-img{
-    width: 100rpx;
-    height: 100rpx;
+    width: 120rpx;
+    height: 120rpx;
     background-color: white;
     margin: 0 30rpx;
     border-radius: 50%;
     position: relative;
     border: 2rpx solid #ccc;
     top: -20rpx;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-.footer-c .cart-img img{
-    width: 100rpx;
-    height: 100rpx;
-    border-radius: 50%;
-    padding: 5rpx;
+.footer-c .cart-img .iconfont{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 80rpx;
 }
+
 .footer-c .countSum{
     position: fixed;
     bottom: 130rpx;
     left: 120rpx;
-    z-index: 991;
+    z-index: 801;
     width: 40rpx;
     height: 40rpx;
     line-height: rpx;
@@ -468,23 +570,27 @@ export default {
     margin-top: 10rpx;
     margin-bottom: 30rpx;
     display: flex;
-    background: green;
     width: 590rpx;
     justify-content: space-between;
     align-items: center;
 }
 .footer-c .total-price{
-    margin-left: 50rpx;
-    
-    background: rgb(139, 34, 113);
+    margin-left: 10rpx;
+    font-size: 48rpx;
+    color: white;
+}
+.footer-c .total-price .fprice{
+    margin-left: 20rpx;
+    font-size: 35rpx;
 }
 .footer-c .sub-button{
-    
     margin-right: 20rpx;
-
     width: 200rpx;
     height: 100rpx;
     background: rgb(42, 149, 199);
+}
+.cartActive{
+    color: coral;
 }
 
 
@@ -558,16 +664,7 @@ export default {
     justify-content: space-between;
     align-items: center;
 }
-.btn-reduce,.btn-add{
-    width: 50rpx;
-    height: 50rpx;
-    background-color: #e64340;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    border-radius: 50%;
-}
+
   
 .btn-num{
     width: 50rpxs;
@@ -577,4 +674,119 @@ export default {
     justify-content: center;
     align-items: center;
 }
+
+
+
+
+.previewModal{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 920;
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    }
+    .modal-c{
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        width: 90%;
+        margin-right: 40rpx;
+        margin-left: 40rpx;
+        border-radius: 10rpx;
+    }
+    .modal-c .header-p{
+      display: flex;
+      flex-direction: column;
+      background-color: #fff;
+    }
+    .modal-c .header-p .item-img{
+      width: 100%;
+      height: 400rpx;
+      background-color: #e7ac40;
+      border-top-left-radius: 10rpx;
+      border-top-right-radius: 10rpx;
+    }
+    .modal-c .header-p .title{
+      font-size: 35rpx;
+      color: #333;
+      font-weight: bold;
+      margin-left: 16rpx;
+      margin-right: 16rpx;
+    }
+    .modal-c .header-p .desc{
+      display: inline-block;
+      font-size: 28rpx;
+      color: #333;
+      margin-left: 16rpx;
+      margin-top: 30rpx;
+      margin-bottom: 20rpx;
+    }
+    .footer-p{
+      display: flex;
+      align-items: center;
+      height: 80rpx;
+      background-color: #f4f4f4;
+      padding: 0 20rpx;
+      border-bottom-left-radius: 10rpx;
+      border-bottom-right-radius: 10rpx;
+    }
+    .footer-p .price{
+      font-size: 36rpx;
+      color: red;
+      flex: 1;
+      font-weight: bold;
+    }
+    .upBtn{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8rpx 12rpx;
+    }
+    .upBtn span{
+      margin:0 10rpx ;
+    }
+    
+    .cancle{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 40rpx;
+    }
+    .cancle i{
+        font-size: 60rpx;
+        color: rgb(134, 128, 128);
+    }
+
+
+    .btn-reduce,.btn-add{
+        width: 50rpx;
+        height: 50rpx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .change-num i{
+        font-size: 40rpx;
+        color: #218868;
+    }
+    .btnUpData i{
+        font-size: 40rpx;
+        color: #218868;
+    }
+    .upBtn i{
+        font-size: 40rpx;
+        color: #218868;
+    }
+    .btn-num{
+        width: 50rpxs;
+        height: 50rpx;
+        font-size: 28rpx;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 </style>

@@ -9,6 +9,10 @@
                 <span>二维码就餐</span>
                 <span class="more">></span>
             </div>
+            <div class="qrCode">
+                <span>我的地址</span>
+                <span class="more">></span>
+            </div>
         </div>
     </div>
 </template>
@@ -27,14 +31,13 @@ export default {
         }
     },
     mounted() {
-        wx.getUserInfo({
-            success:(res)=>{
-                //更新userInfo的状态数据
-                if(res.userInfo){
-                    this.userInfo=res.userInfo
-                }
+        wx.getStorage({
+            key:"token",
+            success:res=>{
+                console.log(res)
+                this.userInfo=res.data
             }
-        })
+            })
     },
 }
 </script>
@@ -48,7 +51,7 @@ export default {
         height: 100rpx;
         vertical-align: middle;
         border-radius: 50rpx;
-        border: 1rpx solid #000;
+        border: 2rpx solid #000;
     }
     .header .logButton{
         display: inline-block;
@@ -64,8 +67,9 @@ export default {
         height: 60rpx;
         line-height: 60rpx;
         margin: 10rpx auto;
-        border: 1rpx solid #eee;
+        border: 2rpx solid #ccc;
         padding: 10rpx;
+        border-radius: 15rpx;
     }
     .more{
         float: right;
