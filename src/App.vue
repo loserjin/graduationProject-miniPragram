@@ -32,8 +32,6 @@ export default {
 </script>
 
 <style>
-
-
   page{
     background-color: #f4f4f4;
     box-sizing: border-box;

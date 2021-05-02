@@ -5,14 +5,25 @@
             <button class="logButton" open-type="getUserInfo" @getuserinfo="handleGetUserInfo">{{userInfo.nickName?userInfo.nickName:'登录'}}</button>
         </div>
         <div class="cardList">
-            <div class="qrCode">
+            <div class="qrCode"  @click="wxAddress">
                 <span>二维码就餐</span>
                 <span class="more">></span>
             </div>
-            <div class="qrCode">
+            <div class="qrCode" @click="toAddress">
                 <span>我的地址</span>
                 <span class="more">></span>
             </div>
+            <!-- <div class="one">
+                <div v-for="(item,index) in areaList" :key="index">
+                <span>{{item.name}}</span>
+                <span>{{item.phone}}</span>
+                <span>{{item.province}}</span>
+                <span>{{item.city}}</span>
+                <span>{{item.county}}</span>
+                <span>{{item.detailInfo}}</span>
+                </div>
+            </div> -->
+            
         </div>
     </div>
 </template>
@@ -20,7 +31,8 @@
 export default {
     data() {
         return {
-            userInfo:{}
+            userInfo:{},
+            areaList:[]
         }
     },
     methods: {
@@ -28,6 +40,36 @@ export default {
             if(res.mp.detail.userInfo){
                 this.userInfo=res.mp.detail.userInfo
             }
+        },
+        toAddress(){
+            wx.navigateTo({
+                url:'/pages/address/main'
+            })
+        },
+        wxAddress(){
+            var that=this
+            wx.chooseAddress({
+                success:(res)=>{
+                    var address={
+                        "name": res.userName,
+                        "phone": res.telNumber,
+                        "province": res.provinceName,
+                        "city": res.cityName,
+                        "county": res.countyName,
+                        "detailInfo": res.detailInfo,
+                    }
+                    that.areaList.push(address)
+                },
+                fail:()=>{
+                   this.openConfirm 
+                }
+            })
+        },
+        getthis(){
+            this.$fly.get("/wxLogin")
+            .then((res)=>{
+                
+            })
         }
     },
     mounted() {
@@ -35,13 +77,16 @@ export default {
             key:"token",
             success:res=>{
                 console.log(res)
-                this.userInfo=res.data
+                // this.userInfo=res.data
             }
             })
     },
 }
 </script>
 <style scoped>
+.one{
+    background: aqua;
+}
     .header{
         padding: 40rpx;
         background: royalblue;

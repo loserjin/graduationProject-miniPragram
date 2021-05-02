@@ -69,7 +69,7 @@ export default {
             this.product=null
         },
         search(){
-            this.$fly.get('http://159.75.3.52:8089/menu/infos?menuName='+this.product)
+            this.$fly.get('http://159.75.3.52:8090/menu/infos?menuName='+this.product)
             .then(res=>{
                 this.productList=res.data.data.records
                 console.log(res)

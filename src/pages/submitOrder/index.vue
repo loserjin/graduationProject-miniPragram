@@ -51,7 +51,7 @@
                     <div class="detail-bottom"> 
                         <div class="detail-b-number">
                             <span>支付方式：微信支付</span>
-                            <span>预计就餐时间：16:47</span>
+                            <span>预计就餐时间：{{multiArray[0][multiIndex[0]]}}，{{multiArray[1][multiIndex[1]]}}</span>
                             <span>定金：{{totalFPrice}}</span>
                         </div>
                         <div class="detail-b-total">
@@ -110,7 +110,7 @@
                     <div class="detail-bottom"> 
                         <div class="detail-b-number">
                             <span>支付方式：微信支付</span>
-                            <span>预计就餐时间：16:47</span>
+                            <span>预计就餐时间：{{multiArray[0][multiIndex[0]]}}，{{multiArray[1][multiIndex[1]]}}</span>
                             <span>定金：{{totalFPrice}}</span>
                             <span>配送费：{{orderprice}}元</span>
                         </div>
@@ -139,12 +139,12 @@
 <script>
 import {mapGetters, mapState} from 'vuex'
 const day=['今天', '明天', '后天']
-const time=["07:00-8:00","08:00-10:00","10:00-12:00","12:00-14:00","16:00-18:00","17:00-19:00","18:00-20:00"]
+const time=["10:00-12:00","12:00-14:00","16:00-18:00","17:00-19:00"]
 export default {
     data() {
         return {
             multiArray: [day, time],
-            multiIndex: [1, 2],
+            multiIndex: [1, 0],
             orderprice:1,
             data:'',
             tab:1,
@@ -163,7 +163,7 @@ export default {
             this.tab=index
         },
         bindMultiPickerChange: function (e) {
-            console.log('picker发送选择改变，携带值为multiIndex=', e.mp.detail.value)
+            // console.log('picker发送选择改变，携带值为multiIndex=', e.mp.detail.value)
             this.multiIndex= e.mp.detail.value
             console.log(this.multiIndex)
 

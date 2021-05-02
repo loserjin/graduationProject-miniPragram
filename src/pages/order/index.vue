@@ -78,7 +78,6 @@ export default {
 </script>
 <style scoped>
     .orList-c{
-        
         display: flex;
         flex-direction: column;
     }

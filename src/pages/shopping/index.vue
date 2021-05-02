@@ -72,7 +72,7 @@
                     <span>￥{{totalPrice}}</span>
                     <span class="fprice">定金:￥{{totalFPrice}}</span>
                 </div>
-                <button class="sub-button"  @click="toSubmit" :disabled="isabled" >结算</button>
+                <button class="sub-button"  @click="toSubmit" :disabled="btn" >结算</button>
             </div>
             
         </div>
@@ -122,7 +122,6 @@
                 </div>
             </div>
             </div>
-            <!-- <div class="food-cover" @click="toggleShow"> -->
             <div class="cancle" @click="closePreview">
                 <i class="iconfont">&#xe605;</i>
             </div>
@@ -136,7 +135,6 @@ export default {
     data() {
         return {
             // 当前饭堂信息
-            isabled:true,
             department:{},
             tagIndex:0, 
             //购物车显示
@@ -227,16 +225,14 @@ export default {
            if(this.totalCount===0){
                //每次清空购物车重置isCart
                this.isCart=false
-               return false
+            //    return false
            }
            return this.isCart
        },
        btn(){
-           if(this.totalCount>0){
-               this.isabled=false
+           if(this.totalCount>0){ 
                return false
-           }else{
-               this.isabled=true
+           }else{   
                return true
            }
        }
@@ -272,7 +268,7 @@ export default {
         
     },
     mounted() {       
-        this.$fly.get('http://159.75.3.52:8089/type/infos?size=99')
+        this.$fly.get('http://159.75.3.52:8090/type/infos?size=99')
         .then(res=>{
             this.type=this.filterType(res.data.data.records,this.floorId)
             if(this.type.length>0){
@@ -281,7 +277,7 @@ export default {
             }
             
         })
-        this.$fly.get('http://159.75.3.52:8089/menu/infos?size=99')
+        this.$fly.get('http://159.75.3.52:8090/dailymenu/infos?size=99')
         .then(res=>{
             this.goods=res.data.data.records
             if(this.goods){

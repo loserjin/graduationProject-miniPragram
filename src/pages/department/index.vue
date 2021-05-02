@@ -87,7 +87,7 @@ export default {
         }
     },
     created() {
-        this.$fly.get('http://159.75.3.52:8089/departmentfloor/infos')
+        this.$fly.get('http://159.75.3.52:8090/departmentfloor/infos')
         .then(res=>{
             this.departments=res.data.data.records
             this.$store.commit('getDepartments',this.departments)
