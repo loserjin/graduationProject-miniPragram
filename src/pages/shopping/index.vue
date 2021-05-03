@@ -268,16 +268,15 @@ export default {
         
     },
     mounted() {       
-        this.$fly.get('http://159.75.3.52:8090/type/infos?size=99')
+        this.$fly.get(`/wechat/type/infos?size=99`)
         .then(res=>{
             this.type=this.filterType(res.data.data.records,this.floorId)
             if(this.type.length>0){
                 this.typeId=this.type[0].typeId
                 this.typeName=this.type[0].typeName 
-            }
-            
+            } 
         })
-        this.$fly.get('http://159.75.3.52:8090/dailymenu/infos?size=99')
+        this.$fly.get(`/wechat/dailymenu/infos?size=99`)
         .then(res=>{
             this.goods=res.data.data.records
             if(this.goods){

@@ -9,6 +9,7 @@
     "pages/submitOrder/main",
     "pages/mine/main",
     "pages/address/main",
+    "pages/addAddress/main",
     "pages/logs/main"
     ],
   "window": {

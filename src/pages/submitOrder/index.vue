@@ -11,6 +11,7 @@
             </div>
         </div>
         <div class="tab-c">
+            <!-- 到店就餐 -->
             <div v-if="tab==1" class="shopDetail">
                 <span class="shopAddress">商家地址</span>
                 <span class="address">广东省湛江市赤坎区寸金路29号</span>
@@ -68,10 +69,19 @@
                     </div>
                 </div>
             </div>
+            <!-- 外卖配送 -->
             <div v-else class="outFood">
-                <div class="receiveAddress">
+                <div class="receiveAddress" @click="toAddress">
                     <i class="iconfont">&#xe602;</i>
-                    <span>选择收货地址</span>
+                    <span v-show="!address">选择收货地址</span>
+                    <span v-show="address">更改收货地址</span>
+                </div>
+                <div class="address-c" v-show="address">
+                    <div class="address-top">
+                        <span>{{address.useraddressName}}</span>
+                        <span class="phone">{{address.useraddressTel}}</span>
+                    </div>
+                    <span class="address-bottom">{{address.useraddress}}</span>
                 </div>
                 <div class="mealTime">
                     <span>预计收货时间：</span>
@@ -147,7 +157,7 @@ export default {
             multiIndex: [1, 0],
             orderprice:1,
             data:'',
-            tab:1,
+            tab:2,
             department:{},
             message:1,
             status:'订单已完成',
@@ -155,12 +165,18 @@ export default {
             order_num:'10454452654654654',
             order_time:'2021-03-11 21:19:47',
             orderfinish_time:"2021-03-12 10:30:00",
-            details:[]
+            details:[],
+            address:''
                 }
     },
     methods: {
         changTab(index){
             this.tab=index
+        },
+        toAddress(){
+            wx.navigateTo({
+                url:'/pages/address/main'
+            })
         },
         bindMultiPickerChange: function (e) {
             // console.log('picker发送选择改变，携带值为multiIndex=', e.mp.detail.value)
@@ -189,13 +205,33 @@ export default {
         var that=this
         wx.getStorage({
             key: 'item',
-            success: function(res){
+            success:(res)=>{
                 // success
-                console.log(res)
             that.department=res.data   
             }
         })
     },
+    onUnload(){
+        wx.removeStorage({
+            key: 'address',
+            success (res) {
+                console.log('离开提交页删除address')
+            }
+        })
+    },
+    onShow(){
+        var that=this
+        wx.getStorage({
+            key:'address',
+            success:(res)=>{
+                that.address=res.data
+            },
+            fail:(err)=>{
+                that.address=''
+                console.log('address不存在/提交页读取addrss失败')
+            }
+        })
+    }
 }
 </script>
 <style scoped>
@@ -366,8 +402,21 @@ export default {
         font-weight: bold;
         color: red;
     }
-
-
+    .address-c{
+        margin-top: 20rpx;
+        padding-bottom: 20rpx;
+        border-bottom: 2rpx solid #ccc;
+        font-size: 35rpx;
+    }
+    .address-c .address-top{
+        height: 60rpx;
+        line-height: 60rpx;
+        margin-bottom: 10rpx;
+    }
+    .address-c .address-top .phone{
+        margin-left: 20rpx;
+    }
+    
     .pay-btn{
         display: flex;
         position: fixed;

@@ -3,10 +3,10 @@
     <div class="image-c">
       <img class="image" :src="userInfo.avatarUrl" alt="" v-if="userInfo">
     </div>
-    <button @click="getUserProfile">获取登录信息</button>
+    <button @click="getUserProfile">{{userInfo?'更新头像':'获取登录信息'}}</button>
     <p class="userName" v-if="!userInfo">请登录！！</p>
     <p class="userName" v-else>你好{{userInfo.nickName}}</p>
-    <button class="goStudy" @click="toDepartment">
+    <button class="goStudy" @click="toDepartment" v-show="userInfo">
       <p>开始订餐</p>
     </button>
   </div>
@@ -29,14 +29,9 @@ export default {
         desc:'用于获取用户资料',
         success:(res)=>{
           console.log(res.userInfo) 
-          wx.setStorage({
-            key:"token",
-            data:''
-          })
            wx.login({
              success(code){
                console.log(code.code)
-               
                if(code.code){
                  that.$fly.post(`/wxLogin?code=${code.code}`,
                 {
@@ -46,7 +41,6 @@ export default {
                   "gender":res.userInfo.gender,
                   "nickName":res.userInfo.nickName
                 }
-              
                 ).then(flyRes=>{
                   console.log(flyRes)
                    wx.setStorage({
@@ -72,7 +66,10 @@ export default {
            })
         },
         fail:(err)=>{
-          
+          wx.showToast({
+            title:'拒绝',
+            icon:'none'
+          })
         }
       })
     },
@@ -84,30 +81,60 @@ export default {
   },
   beforeMount() {
     console.log("--beforeMount")
-    wx.showModal({
-      title:'请登录',
-      content:'如果不登录将无法使用该小程序',
-      success:()=>{
-        this.getUserProfile()
-      },
-      fail:()=>{
-        wx.showToast({
-            title:'您拒绝了授权',
-            icon:'none'
-          })
-      }
-    })
     wx.getStorage({
       key:"token",
-      success:res=>{
+      success:(res)=>{
         console.log('已读取本地token')
-        console.log(res.data)
+        wx.getStorage({
+          key:'userInfo',
+          success:(userInfo)=>{
+            console.log('有token，自动获取userinfo')
+            this.userInfo=userInfo.data
+          },
+          fail:(err1)=>{
+            console.log('未获取到userinfo')
+          }
+        })
       },
-      fail:res=>{
+      fail:(err)=>{
         console.log('查找不到本地token')
-        
+        wx.showModal({
+          title:'请登录',
+          content:'如果不登录将无法订餐',
+          success:(res)=>{
+            if(res.cancel){
+              console.log('直接退出小程序')
+            }else if(res.confirm){
+              console.log('请求登录')
+              this.getUserProfile()
+            }   
+          },        
+        })
       }
     })
+    // wx.showModal({
+    //   title:'请登录',
+    //   content:'如果不登录将无法订餐',
+    //   success:()=>{
+    //     this.getUserProfile()
+    //   },
+    //   fail:()=>{
+    //     wx.showToast({
+    //         title:'您拒绝了授权',
+    //         icon:'none'
+    //       })
+    //   }
+    // })
+    // wx.getStorage({
+    //   key:"token",
+    //   success:res=>{
+    //     console.log('已读取本地token')
+    //     console.log(res.data)
+    //   },
+    //   fail:res=>{
+    //     console.log('查找不到本地token')
+    //   }
+    // })
   }
 }
 

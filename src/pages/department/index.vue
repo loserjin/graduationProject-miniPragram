@@ -84,12 +84,18 @@ export default {
         },
         searchClick(){
             wx.navigateTo({url: '/pages/search/main'})
+        },
+        filterdepartment(arr){
+            var newArr2=arr.filter((item)=>{
+                return item.departmentId!=1
+            })
+            return newArr2
         }
     },
     created() {
-        this.$fly.get('http://159.75.3.52:8090/departmentfloor/infos')
+        this.$fly.get(`/wechat/departmentfloor/infos`)
         .then(res=>{
-            this.departments=res.data.data.records
+            this.departments=this.filterdepartment(res.data.data.records)
             this.$store.commit('getDepartments',this.departments)
         })
     },

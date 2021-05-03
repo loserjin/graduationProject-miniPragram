@@ -2,10 +2,10 @@
     <div>
         <div class="header">
             <img :src="userInfo.avatarUrl?userInfo.avatarUrl:'/static/tabs/gerenzhongxin.png'" alt="">
-            <button class="logButton" open-type="getUserInfo" @getuserinfo="handleGetUserInfo">{{userInfo.nickName?userInfo.nickName:'登录'}}</button>
+            <button class="logButton">{{userInfo.nickName?userInfo.nickName:'登录'}}</button>
         </div>
         <div class="cardList">
-            <div class="qrCode"  @click="wxAddress">
+            <div class="qrCode">
                 <span>二维码就餐</span>
                 <span class="more">></span>
             </div>
@@ -13,16 +13,6 @@
                 <span>我的地址</span>
                 <span class="more">></span>
             </div>
-            <!-- <div class="one">
-                <div v-for="(item,index) in areaList" :key="index">
-                <span>{{item.name}}</span>
-                <span>{{item.phone}}</span>
-                <span>{{item.province}}</span>
-                <span>{{item.city}}</span>
-                <span>{{item.county}}</span>
-                <span>{{item.detailInfo}}</span>
-                </div>
-            </div> -->
             
         </div>
     </div>
@@ -32,54 +22,23 @@ export default {
     data() {
         return {
             userInfo:{},
-            areaList:[]
         }
     },
     methods: {
-        handleGetUserInfo(res){
-            if(res.mp.detail.userInfo){
-                this.userInfo=res.mp.detail.userInfo
-            }
-        },
         toAddress(){
             wx.navigateTo({
                 url:'/pages/address/main'
             })
         },
-        wxAddress(){
-            var that=this
-            wx.chooseAddress({
-                success:(res)=>{
-                    var address={
-                        "name": res.userName,
-                        "phone": res.telNumber,
-                        "province": res.provinceName,
-                        "city": res.cityName,
-                        "county": res.countyName,
-                        "detailInfo": res.detailInfo,
-                    }
-                    that.areaList.push(address)
-                },
-                fail:()=>{
-                   this.openConfirm 
-                }
-            })
-        },
-        getthis(){
-            this.$fly.get("/wxLogin")
-            .then((res)=>{
-                
-            })
-        }
     },
     mounted() {
         wx.getStorage({
-            key:"token",
+            key:"userInfo",
             success:res=>{
                 console.log(res)
-                // this.userInfo=res.data
+                this.userInfo=res.data
             }
-            })
+        })
     },
 }
 </script>

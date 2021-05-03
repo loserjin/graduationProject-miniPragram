@@ -3,10 +3,12 @@ const fly = new Fly()
 //添加拦截器
 fly.interceptors.request.use((config,promise)=>{
     //给所有请求添加自定义header
-    config.headers["X-Tag"]="flyio";
-    if(wx.getStorage('token')){
-        config.headers['authorization']=wx.getStorage('token');
-    }
+    wx.getStorage({
+          key: "token",
+          success(res) {
+            config.headers["authorization"]=res.data[0];
+          }
+        });
     return config;
   })
   //配置请求基地址
