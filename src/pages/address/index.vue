@@ -13,8 +13,8 @@
                 </div>
                 <div class="btn-c">
                     <span class="edit" @click="editAddress(item)">编辑</span>
-                    <span class="clear" @click="clearAddress(item)">删除</span>
-                    <span class="choice" @click="choiceAddress(item)">选择</span>
+                    <span class="clear" @click="clearAddress(item)" v-if="!page">删除</span>
+                    <span class="choice" @click="choiceAddress(item)" v-else>选择</span>
                 </div>
             </div>
         </scroll-view>
@@ -30,39 +30,30 @@ export default {
     data() {
         return {
             areaList:[],
+            page:''
         }
     },
     methods: {
         editAddress(item){
-            wx.setStorage({
-                key:'address',
-                data:item,
-                success:(res)=>{
-                    console.log(res)
-                }
-            })
             wx.navigateTo({
-                // 把当前的楼层id传到shopping页
-                url:'/pages/addAddress/main'
+                // url:`/pages/addAddress/main`
+                url:`/pages/addAddress/main?address=`+JSON.stringify(item)
             })
         },
         clearAddress(item){
-            console.log(item.useraddressId)
             this.$fly.post(`/useraddress/delect?useraddressId=`+item.useraddressId)
             .then(res=>{
                 this.$fly.get(`/useraddress/infos?size=99`)
                 .then(res=>{
                     this.areaList=res.data.data.records
                 })
-                wx.removeStorage({
-                    key: 'address',
-                    success (res) {
-                        console.log('删除address')
-                    }
-                })
             })
         },
         choiceAddress(item){
+            // 方法一：问号传参，但是会造成页面跳转问题
+            // wx.redirectTo({
+            //     url:`/pages/submitOrder/main?address=`+JSON.stringify(item)
+            // })
             wx.setStorage({
                 key:'address',
                 data:item,
@@ -119,12 +110,15 @@ export default {
             })
         },
     },
-    mounted() {
-        this.$fly.get(`/useraddress/infos?size=99`)
-        .then(res=>{
-            this.areaList=res.data.data.records
-        })
+    beforeMount() {
+        this.page=this.$mp.query.page
     },
+    onShow(){
+        this.$fly.get(`/useraddress/infos?size=99`)
+            .then(res=>{
+                this.areaList=res.data.data.records
+        })
+    }
 }
 </script>
 <style scoped>

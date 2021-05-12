@@ -75,7 +75,7 @@ export default {
     },
     toDepartment(){
       wx.navigateTo({
-        url:'/pages/department/main'
+        url:'/pages/orderTime/main'
       })
     }
   },
@@ -84,6 +84,7 @@ export default {
     wx.getStorage({
       key:"token",
       success:(res)=>{
+        console.log(res.data)
         console.log('已读取本地token')
         wx.getStorage({
           key:'userInfo',
@@ -144,8 +145,7 @@ export default {
   .indexContent{
     display: flex;
     flex-direction: column;
-    align-items: center;
-    
+    align-items: center;    
   }
   .image-c{
     width: 200rpx;

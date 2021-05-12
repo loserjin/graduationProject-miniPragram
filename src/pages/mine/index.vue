@@ -48,7 +48,7 @@ export default {
 }
     .header{
         padding: 40rpx;
-        background: royalblue;
+        background: #69BCE7;
     }
     .header img{
         width: 100rpx;

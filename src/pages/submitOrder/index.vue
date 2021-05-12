@@ -15,7 +15,7 @@
             <div v-if="tab==1" class="shopDetail">
                 <span class="shopAddress">商家地址</span>
                 <span class="address">广东省湛江市赤坎区寸金路29号</span>
-                <div class="mealTime">
+                <!-- <div class="mealTime">
                     <span>就餐时间：</span>
                     <picker @change="bindMultiPickerChange" @columnchange="bindMultiPickerColumnChange" mode='multiSelector' :value="multiIndex" :range="multiArray">
                         <div class="time">
@@ -23,7 +23,7 @@
                             <i class="iconfont">&#xe60f;</i>
                         </div>    
                     </picker>
-                </div>
+                </div> -->
                 <div class="detail-c">
                     <div class="detail-top">
                         <img src="" alt="">
@@ -33,7 +33,7 @@
                     </div>
                     <scroll-view class="swiper" :scroll-y="true">
                         <div class="detail-content" v-for="(item,index) in myCart" :key="index">
-                            <div detail-l>
+                            <div detail-l >
                                 <img src="" alt="">
                             </div>
                             <div class="detail-r">
@@ -52,7 +52,13 @@
                     <div class="detail-bottom"> 
                         <div class="detail-b-number">
                             <span>支付方式：微信支付</span>
-                            <span>预计就餐时间：{{multiArray[0][multiIndex[0]]}}，{{multiArray[1][multiIndex[1]]}}</span>
+                            <!-- <span>预计就餐时间：{{multiArray[0][multiIndex[0]]}}，{{multiArray[1][multiIndex[1]]}}</span> -->
+                            <span>
+                                预定配送日期：{{param.date}} 
+                                <span v-if="param.time==0">上午</span>
+                                <span v-else-if="param.time==1">中午</span>
+                                <span v-else-if="param.time==2">下午</span>
+                            </span>
                             <span>定金：{{totalFPrice}}</span>
                         </div>
                         <div class="detail-b-total">
@@ -61,7 +67,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="pay-btn" @click="payClick">
+                <div class="pay-btn" @click="payClick1">
                     <div class="top">
                         <span class="s-l">微信支付定金</span>
                         <span class="s-r">￥{{totalFPrice}}</span>
@@ -76,14 +82,14 @@
                     <span v-show="!address">选择收货地址</span>
                     <span v-show="address">更改收货地址</span>
                 </div>
-                <div class="address-c" v-show="address">
+                <div class="address-c" v-show="address.useraddress">
                     <div class="address-top">
                         <span>{{address.useraddressName}}</span>
                         <span class="phone">{{address.useraddressTel}}</span>
                     </div>
                     <span class="address-bottom">{{address.useraddress}}</span>
                 </div>
-                <div class="mealTime">
+                <!-- <div class="mealTime">
                     <span>预计收货时间：</span>
                     <picker @change="bindMultiPickerChange" @columnchange="bindMultiPickerColumnChange" mode='multiSelector' :value="multiIndex" :range="multiArray">
                         <div class="time">
@@ -91,7 +97,7 @@
                             <i class="iconfont">&#xe60f;</i>
                         </div>    
                     </picker>
-                </div>
+                </div> -->
                 <div class="detail-c">
                     <div class="detail-top">
                         <img src="" alt="">
@@ -106,7 +112,7 @@
                             </div>
                             <div class="detail-r">
                                 <div class="detail-r-top">
-                                    <span class="detail-r-name">{{item.menuName}}</span>
+                                    <span class="detail-r-name" >{{item.menuName}}</span>
                                     <span class="detail-r-price">￥{{item.menuMoney}}</span>
                                 </div>
                             <div class="detail-r-middle">
@@ -120,8 +126,13 @@
                     <div class="detail-bottom"> 
                         <div class="detail-b-number">
                             <span>支付方式：微信支付</span>
-                            <span>预计就餐时间：{{multiArray[0][multiIndex[0]]}}，{{multiArray[1][multiIndex[1]]}}</span>
-                            <span>定金：{{totalFPrice}}</span>
+                            <!-- <span>预计就餐时间：{{multiArray[0][multiIndex[0]]}}，{{multiArray[1][multiIndex[1]]}}</span> -->
+                            <span>
+                                预定配送日期：{{param.date}} 
+                                <span v-if="param.time==0">上午</span>
+                                <span v-else-if="param.time==1">中午</span>
+                                <span v-else-if="param.time==2">下午</span>
+                            </span>
                             <span>配送费：{{orderprice}}元</span>
                         </div>
                         <div class="detail-b-total">
@@ -130,7 +141,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="pay-btn" @click="payClick">
+                <div class="pay-btn" @click="payClick2">
                     <div class="top">
                         <span class="s-l">微信支付</span>
                         <span class="s-r">￥{{sumPrice}}</span>
@@ -155,19 +166,15 @@ export default {
         return {
             multiArray: [day, time],
             multiIndex: [1, 0],
+            //配送费
             orderprice:1,
-            data:'',
-            tab:2,
+            tab:1,
             department:{},
-            message:1,
-            status:'订单已完成',
-            shop_name:'鸿园二楼店',
-            order_num:'10454452654654654',
-            order_time:'2021-03-11 21:19:47',
-            orderfinish_time:"2021-03-12 10:30:00",
-            details:[],
-            address:''
-                }
+            dailymenuId:[],
+            menuTotal:[],
+            address:{},
+            param:{}
+        }
     },
     methods: {
         changTab(index){
@@ -175,7 +182,7 @@ export default {
         },
         toAddress(){
             wx.navigateTo({
-                url:'/pages/address/main'
+                url:'/pages/address/main?page='+1
             })
         },
         bindMultiPickerChange: function (e) {
@@ -188,8 +195,139 @@ export default {
             var column = e.mp.detail.column;
             var value = e.mp.detail.value;
             console.log('修改的列为', column, '，值为', value);
+        },
+        //订金支付接口
+        payDeposit(orderId){
+            this.$fly.post(`/wechat/userorder/changeFstatus?userorderFStatus=1&&userorderId=`+orderId)
+                .then(orderRes=>{
+                    console.log(orderRes)
+                    wx.showToast({
+                    title: '订金支付成功',
+                    icon: 'success',
+                    duration: 2000
+                    })
+                })
+        },
+        //到店就餐支付接口
+        payClick1(){
+            // console.log(this.$store.state.myCart)
+            this.addDailymenuId(this.$store.state.myCart)
+            this.addMenuTotal(this.$store.state.myCart)
+            this.$fly.post(`/wechat/userorder/edit`,{
+                "dailymenuId":this.dailymenuId,  
+                "menuTotal":this.menuTotal,
+            }).then(res=>{
+                if(res.data.code==200){
+                    console.log(res.data.data)
+                    var orderId=res.data.data
+                    wx.showModal({
+                        title:'请支付订金',
+                        content:'如果超时将取消订单',
+                        success:(res)=>{
+                            if(res.cancel){
+                            console.log('未支付订金，跳转订单页')
+                            wx.showToast({
+                            title: '订单提交成功',
+                            icon: 'success',
+                            duration: 2000
+                            })
+                            setTimeout(function () {
+                                wx.switchTab({
+                                url:`/pages/order/main`
+                            })
+                        }, 1000)
+                            }else if(res.confirm){
+                            this.payDeposit(orderId)
+                            console.log('已支付订金，跳转订单页')
+                            wx.showToast({
+                                title: '订单订金成功',
+                                icon: 'success',
+                                duration: 2000
+                                })
+                                setTimeout(function () {
+                                    wx.switchTab({
+                                    url:`/pages/order/main`
+                                })
+                            }, 1000)
+                            }   
+                        },        
+                    })
+                    
+                      
+                }
+            })
+            .catch(err=>{
+                console.log('请求失败')
+                wx.showToast({
+                    title: '订单提交失败',
+                    icon: 'error',
+                    duration: 2000
+                })
+                this.clearorder()
+            })
+        },
+        //外卖支付接口
+        payClick2(){
+            if(this.address.useraddressId){
+                this.addDailymenuId(this.$store.state.myCart)
+                this.addMenuTotal(this.$store.state.myCart)
+                this.$fly.post(`/wechat/userorder/edit`,{
+                    "dailymenuId":this.dailymenuId,  
+                    "menuTotal":this.menuTotal,
+                    "useraddressId":this.address.useraddressId,
+                    "useraddressTel":this.address.useraddressTel,
+                    "useraddressName":this.address.useraddressName,
+                    "useraddress":this.address.useraddress
+                }).then(res=>{
+                    if(res.data.code==200){
+                        wx.showToast({
+                        title: '订单提交成功',
+                        icon: 'success',
+                        duration: 2000
+                        })
+                        setTimeout(function () {
+                            wx.switchTab({
+                            url:`/pages/order/main`
+                        })
+                    }, 1000)
+                        
+                    }
+                })
+                .catch(err=>{
+                    console.log('请求失败')
+                    wx.showToast({
+                        title: '订单提交失败',
+                        icon: 'error',
+                        duration: 2000
+                    })
+                    this.clearorder()
+                })
+            }else{
+                wx.showToast({
+                        title: '请选择配送地址',
+                        icon: 'error',
+                        duration: 2000
+                    })
+            }
+            
+        },
+        addDailymenuId(item){ 
+            for(var i=0;i<item.length;i++){
+                this.dailymenuId.push(item[i].dailymenuId)
+                console.log(this.dailymenuId)
+            }
+            
+        },
+        addMenuTotal(item){
+            for(var i=0;i<item.length;i++){
+                this.menuTotal.push(item[i].count)
+                console.log(this.menuTotal)
+            }
+        },
+        clearorder(){
+            this.menuTotal=[],
+            this.dailymenuId=[]
         }
-
     },
     computed:{
         ...mapState(['myCart','department']),
@@ -203,6 +341,7 @@ export default {
     },
     beforeMount() {
         var that=this
+        this.param=JSON.parse(this.$mp.query.param)
         wx.getStorage({
             key: 'item',
             success:(res)=>{
@@ -212,6 +351,8 @@ export default {
         })
     },
     onUnload(){
+        this.dailymenuId=[]
+        this.menuTotal=[]
         wx.removeStorage({
             key: 'address',
             success (res) {
@@ -220,6 +361,14 @@ export default {
         })
     },
     onShow(){
+        // 方法一：拿到页面问号传参值
+        // if(this.$mp.query.address){
+        //     console.log(this.$mp.query.address)
+        //     this.address=JSON.parse(this.$mp.query.address)
+        //     console.log(this.address)
+        // }
+
+        // 方法二
         var that=this
         wx.getStorage({
             key:'address',

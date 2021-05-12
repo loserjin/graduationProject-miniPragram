@@ -18,114 +18,183 @@
                 </div>
             </div>
             <div class="cate-c">
-                <span>菜单</span>
-                <div class="line"></div>
+                <div class="cate"  @click="changCate(1)">
+                    <span :class="{'select':cate==1}">菜单</span>
+                    <div :class="{'line':cates==1}"></div>
+                </div>
+                 <div class="cate"  @click="changCate(2)">
+                    <span :class="{'select':cate==2}">评论</span>
+                    <div :class="{'line':cates==2}"></div>
+                </div>
+                
             </div>
         </div>
-        <!-- 中间商品内容部分 -->
-        <div class="list-c">
-            <!-- 商品列表分类 -->
-            <scroll-view class="list-l" :scroll-y="true">
-                <div class="list-l-item" :class="{active:index===tagIndex}" v-for="(item,index) in type" :key="index" @click="categoryClick(item.typeId,index)">
-                    <span>{{item.typeName}}</span>
-                    
-                </div>
-            </scroll-view>
-            <!-- 商品内容选择 -->
-            <scroll-view class="list-r" :scroll-y="true">
-                <div class="section">
-                    <span>{{typeName}}</span>
-                </div>
-                <div class="item-list" v-for="(item,index) in food" :key="index" @click=showFood(item)>
-                    <div class="item">
-                        <div class="item-l">
-                            <img src="" alt="">
-                        </div>
-                        <div class="item-r">
-                            <span class="title">{{item.menuName}}</span>
-                            <span class="description">{{item.menuFMoney}}</span>
-                            <div class="item-r-bottom">
-                                <span class="price">{{item.menuMoney}}</span>
-                                <div class="change-num">
-                                    <div class="btn-reduce" @click.stop="removeToCart(item)" v-if="item.count">
-                                        <i class="iconfont">&#xe6b8;</i>
+        <!-- 左边容器 -->
+        <div v-if="cate==1">
+            <!-- 中间商品内容部分 -->
+            <div class="list-c">
+                <!-- 商品列表分类 -->
+                <scroll-view class="list-l" :scroll-y="true">
+                    <div class="list-l-item" :class="{active:index===tagIndex}" v-for="(item,index) in type" :key="index" @click="categoryClick(item.typeId,index)">
+                        <span>{{item.typeName}}</span>
+                        
+                    </div>
+                </scroll-view>
+                <!-- 商品内容选择 -->
+                <scroll-view class="list-r" :scroll-y="true">
+                    <div class="section">
+                        <span>{{typeName}}</span>
+                    </div>
+                    <div class="item-list" v-for="(item,index) in food" :key="index" @click=showFood(item)>
+                        <div class="item">
+                            <div class="item-l">
+                                <img src="" alt="">
+                            </div>
+                            <div class="item-r">
+                                <span class="title">{{item.menuName}}</span>
+                                <span class="description">{{item.menuFMoney}}</span>
+                                <div class="item-r-bottom">
+                                    <span class="price">{{item.menuMoney}}</span>
+                                    <div class="change-num">
+                                        <div class="btn-reduce" @click.stop="removeToCart(item)" v-if="item.count">
+                                            <i class="iconfont">&#xe6b8;</i>
+                                        </div>
+                                        <span class="btn-num" v-if="item.count">{{item.count}}</span>
+                                        <div class="btn-add" @click.stop="addToCart(item)"><i class="iconfont">&#xe602;</i></div>
                                     </div>
-                                    <span class="btn-num" v-if="item.count">{{item.count}}</span>
-                                    <div class="btn-add" @click.stop="addToCart(item)"><i class="iconfont">&#xe602;</i></div>
                                 </div>
                             </div>
                         </div>
+                        
                     </div>
-                    
-                </div>
-            </scroll-view>
-        </div>
-        
-        <!-- 下部分购物车栏 -->
-        <div class="footer-c">
-            <div class="cart-img" @click="showCart">
-                <i class="iconfont" :class="{cartActive:isCart===true}">&#xe601;</i>
-                <span class="countSum" v-show="totalCount">{{totalCount}}</span>
-            </div>
-            <div class="cart-content">
-                <div class="total-price">
-                    <span>￥{{totalPrice}}</span>
-                    <span class="fprice">定金:￥{{totalFPrice}}</span>
-                </div>
-                <button class="sub-button"  @click="toSubmit" :disabled="btn" >结算</button>
+                </scroll-view>
             </div>
             
-        </div>
-
-        <!-- 黑背景模糊墙 -->
-        <div  class="beiJing-back" @click="cartClose" v-show="listShow"></div>
-
-        <!-- 购物车 弹窗层 -->
-        <div class="cart-c" v-show="listShow">
-            <div class="cart-c-top">
-                <div class="top-r">购物车</div>
-                <div class="top-l" @click="clearCart">清空</div>
-            </div>
-            <scroll-view class="cart-c-list" scroll-y="true">
-                <div class="cart-list-item" v-for="(item,index) in myCart" :key="index">
-                    <span>{{item.menuName}}</span>
-                    <div class="item-view">
-                            <div class="cartPrice"><span>￥{{item.menuMoney}}</span></div>
-                            <div class="btnUpData">
-                                <div class="btn-reduce" @click="removeCart(item)"><i class="iconfont">&#xe6b8;</i></div>
-                                <div class="btn-num">{{item.count}}</div>
-                                <div class="btn-add" @click="addCart(item)"><i class="iconfont">&#xe602;</i></div>
-                            </div>   
+            <!-- 下部分购物车栏 -->
+            <div class="footer-c">
+                <div class="cart-img" @click="showCart">
+                    <i class="iconfont" :class="{cartActive:isCart===true}">&#xe601;</i>
+                    <span class="countSum" v-show="totalCount">{{totalCount}}</span>
+                </div>
+                <div class="cart-content">
+                    <div class="total-price">
+                        <span>￥{{totalPrice}}</span>
+                        <span class="fprice">定金:￥{{totalFPrice}}</span>
                     </div>
+                    <button class="sub-button"  @click="toSubmit" :disabled="btn" >结算</button>
                 </div>
-            </scroll-view>
-        </div>
-        
+                
+            </div>
 
-        <!-- 菜品详情 -->
-        <div class="previewModal" v-if="isShow">
-            <div class="modal-c">
-            <div class="header-p">
-                <img class="item-img" src="" alt="">
-                <span class="title">{{foodModal.menuName}}</span>
-                <div>
-                <span class="desc" v-for="(item,i) in foodModal.menucomponents" :key="i">{{item.componentName}}</span>
+            <!-- 黑背景模糊墙 -->
+            <div  class="beiJing-back" @click="cartClose" v-show="listShow"></div>
+
+            <!-- 购物车 弹窗层 -->
+            <div class="cart-c" v-show="listShow">
+                <div class="cart-c-top">
+                    <div class="top-r">购物车</div>
+                    <div class="top-l" @click="clearCart">清空</div>
                 </div>
+                <scroll-view class="cart-c-list" scroll-y="true">
+                    <div class="cart-list-item" v-for="(item,index) in myCart" :key="index">
+                        <span>{{item.menuName}}</span>
+                        <div class="item-view">
+                                <div class="cartPrice"><span>￥{{item.menuMoney}}</span></div>
+                                <div class="btnUpData">
+                                    <div class="btn-reduce" @click="removeCart(item)"><i class="iconfont">&#xe6b8;</i></div>
+                                    <div class="btn-num">{{item.count}}</div>
+                                    <div class="btn-add" @click="addCart(item)"><i class="iconfont">&#xe602;</i></div>
+                                </div>   
+                        </div>
+                    </div>
+                </scroll-view>
             </div>
             
-            <div class="footer-p">
-                <span class="price">￥{{foodModal.menuMoney}}</span>
-                <div class="upBtn">
-                    <div class="btn-reduce" @click="removeCart(foodModal)" v-if="foodModal.count"><i class="iconfont">&#xe6b8;</i></div>
-                    <span class="btn-num" v-if="foodModal.count">{{foodModal.count}}</span>
-                    <div class="btn-add" @click="addCart(foodModal)"><i class="iconfont">&#xe602;</i></div>
+
+            <!-- 菜品详情 -->
+            <div class="previewModal" v-if="isShow">
+                <div class="modal-c">
+                <div class="header-p">
+                    <img class="item-img" src="" alt="">
+                    <span class="title">{{foodModal.menuName}}</span>
+                    <div>
+                    <span class="desc" v-for="(item,i) in foodModal.menucomponents" :key="i">{{item.componentName}}</span>
+                    </div>
+                </div>
+                
+                <div class="footer-p">
+                    <span class="price">￥{{foodModal.menuMoney}}</span>
+                    <div class="upBtn">
+                        <div class="btn-reduce" @click="removeCart(foodModal)" v-if="foodModal.count"><i class="iconfont">&#xe6b8;</i></div>
+                        <span class="btn-num" v-if="foodModal.count">{{foodModal.count}}</span>
+                        <div class="btn-add" @click="addCart(foodModal)"><i class="iconfont">&#xe602;</i></div>
+                    </div>
+                </div>
+                </div>
+                <div class="cancle" @click="closePreview">
+                    <i class="iconfont">&#xe605;</i>
                 </div>
             </div>
-            </div>
-            <div class="cancle" @click="closePreview">
-                <i class="iconfont">&#xe605;</i>
+        </div>
+        <!-- 右边容器 -->
+        <div v-else>
+            <div class="comment-c">
+                <div class="comment-c-header">食堂评论</div>
+                <scroll-view class="comment-scroll">
+                    <div class="comment" v-for="(item,index) in commentList" :key="index">
+                        <div class="comment-l">
+                            <img src="" alt="">
+                        </div>
+                        <div class="comment-r">
+                            <div class="comment-r-haeder">
+                                <div class="commentName">{{item.discussName}}</div>
+                                <div class="commentTime">{{item.discussCreatime}}</div>
+                            </div>
+                            <div class="comment-r-middle">
+                                <div class="star" v-if="item.discussStart==1">
+                                    <i class="iconfont bright">&#xe60d;</i>
+                                    <i class="iconfont dark">&#xe60d;</i>
+                                    <i class="iconfont dark">&#xe60d;</i>
+                                    <i class="iconfont dark">&#xe60d;</i>
+                                    <i class="iconfont dark">&#xe60d;</i>
+                                </div>
+                                <div class="star" v-else-if="item.discussStart==2">
+                                    <i class="iconfont bright">&#xe60d;</i>
+                                    <i class="iconfont bright">&#xe60d;</i>
+                                    <i class="iconfont dark">&#xe60d;</i>
+                                    <i class="iconfont dark">&#xe60d;</i>
+                                    <i class="iconfont dark">&#xe60d;</i>
+                                </div>
+                                <div class="star" v-else-if="item.discussStart==3">
+                                    <i class="iconfont bright">&#xe60d;</i>
+                                    <i class="iconfont bright">&#xe60d;</i>
+                                    <i class="iconfont bright">&#xe60d;</i>
+                                    <i class="iconfont dark">&#xe60d;</i>
+                                    <i class="iconfont dark">&#xe60d;</i>
+                                </div>
+                                <div class="star" v-else-if="item.discussStart==4">
+                                    <i class="iconfont bright">&#xe60d;</i>
+                                    <i class="iconfont bright">&#xe60d;</i>
+                                    <i class="iconfont bright">&#xe60d;</i>
+                                    <i class="iconfont bright">&#xe60d;</i>
+                                    <i class="iconfont dark">&#xe60d;</i>
+                                </div>
+                                <div class="star" v-else-if="item.discussStart==5">
+                                    <i class="iconfont bright">&#xe60d;</i>
+                                    <i class="iconfont bright">&#xe60d;</i>
+                                    <i class="iconfont bright">&#xe60d;</i>
+                                    <i class="iconfont bright">&#xe60d;</i>
+                                    <i class="iconfont bright">&#xe60d;</i>
+                                </div>
+                                <div class="text">{{item.discussText}}</div>
+                                <div class="img" v-if="item.img">图片</div>
+                            </div>
+                        </div>
+                    </div>
+                </scroll-view>
             </div>
         </div>
+        
     </div>
 </template>
 
@@ -136,6 +205,8 @@ export default {
         return {
             // 当前饭堂信息
             department:{},
+            cate:2,
+            cates:2,
             tagIndex:0, 
             //购物车显示
             isCart:false,
@@ -143,7 +214,7 @@ export default {
             isShow: false,
             floorId:0,
             typeId:0,
-            typeName:null,
+            typeName:'',
             type:[],
             goods:[],
             // 全部food
@@ -151,10 +222,17 @@ export default {
             // 分好类的food
             food:[],
             // 点击传的food
-            foodModal:[]
+            foodModal:[],
+            commentList:[],
+            //接受前面传过来的id、日期、时段
+            param:{}
         }
     },
     methods: { 
+        changCate(index){
+            this.cate=index
+            this.cates=index
+        },
         //左侧点击按钮，切换分类
         categoryClick(id, index) {
             this.tagIndex = index;
@@ -202,7 +280,9 @@ export default {
             this.$store.commit('cartClear')
         },   
         toSubmit(){
-            wx.navigateTo({url: '/pages/submitOrder/main'}) 
+            wx.navigateTo({
+                url: `/pages/submitOrder/main?param=`+JSON.stringify(this.param)
+                }) 
         },
         filterType(arr,id){
             var newArr=arr.filter((item)=>{
@@ -239,13 +319,18 @@ export default {
     },
     onUnload(){
         this.$store.commit('cartClear')
+        this.typeName=''
+        this.tagIndex=0
     },
     beforeMount() {
         // 拿到楼层ID
-        // console.log(this.$mp.query.id)
+        // console.log(this.$mp.query.param)
         var that=this
-        if(this.$mp.query.id){
-            this.floorId=parseInt(this.$mp.query.id)
+        if(this.$mp.query.param){
+             var param=JSON.parse(this.$mp.query.param)
+            this.floorId=parseInt(param.floorId)
+            this.param=param
+            console.log(this.param)
         }else{
             wx.getStorage({
                 key: 'key',
@@ -262,30 +347,45 @@ export default {
                     // success
                     console.log(res)
                    that.department=res.data  
-
                 }
             })
         
     },
     mounted() {       
-        this.$fly.get(`/wechat/type/infos?size=99`)
+        this.$fly.get(`/wechat/type/infos`)
         .then(res=>{
-            this.type=this.filterType(res.data.data.records,this.floorId)
+            this.type=this.filterType(res.data.data,this.floorId)
             if(this.type.length>0){
                 this.typeId=this.type[0].typeId
                 this.typeName=this.type[0].typeName 
             } 
+        }),
+        this.$fly.get(`/wechat/dailymenu/infos`,{
+            "departmentId":this.param.id,
+            "departmentfloorId":this.param.floorId,
+            // "date":this.param.date,
+            "date":this.param.date,
+            "time":this.param.time
         })
-        this.$fly.get(`/wechat/dailymenu/infos?size=99`)
         .then(res=>{
-            this.goods=res.data.data.records
+            console.log(res)
+            this.goods=res.data.data
             if(this.goods){
                 var data=this.goods.filter((item)=>{
                     return item.departmentfloorId===this.floorId
                 })
                 this.foods=data
+                console.log(this.foods)
                 this.food=this.filterFoods(this.foods,this.typeId) 
             }  
+        })
+        // this.$fly.get(`/wechat/discuss/infos?departmentId=`+ this.param.id+`&&departmentfloorId=`+this.param.floorId)
+        // .then(res=>{
+        //     this.commentList=res.data.data
+        // })
+        this.$fly.get(`/wechat/discuss/infos?departmentId=4&&departmentfloorId=8`)
+        .then(res=>{
+            this.commentList=res.data.data
         })
     },
     
@@ -307,7 +407,7 @@ export default {
 .header-c .header{
     display: flex;
     align-items: center;
-    background: #1296db;
+    background: #fafafa;
     height: 150rpx;
 }
 .header-c .header-l{
@@ -347,16 +447,32 @@ export default {
 .header-c .cate-c{
     display: flex;
     height: 70rpx;
-    background-color: #e4e4e4;
+    background-color: white;
     align-items: center;
     box-sizing: border-box;
     border-bottom: 1rpx solid rgb(153, 149, 149);
     position: relative; 
 }
+.header-c .cate-c .cate{
+    margin-left: 20rpx;
+    height: 60rpx;
+    position: relative;
+    width: 120rpx;
+
+    text-align: center;
+}
 .header-c .cate-c span{
     font-size: 35rpx;
     color: #000;
-    margin-left: 40rpx;
+    line-height: 60rpx;
+
+    
+}
+.header-c .cate-c .cate span{
+    color: #666;
+}
+.header-c .cate-c .cate .select{
+    color: black;
 }
 .header-c .cate-c .line{
     position: absolute;
@@ -364,7 +480,7 @@ export default {
     bottom: 2rpx;
     width: 60rpx;
     height: 4rpx;
-    left: 40rpx;
+    left: 30rpx;
 }
 
 /* 中间内容部分 */
@@ -373,7 +489,7 @@ export default {
     position: fixed;
     top: 220rpx;
     bottom: 150rpx;
-    width: 750rpx;
+    width: 100%;
 }
 
 
@@ -382,7 +498,7 @@ export default {
     display: flex;
     flex-direction: column;
     width: 160rpx;
-    background: #e4e4e4;
+    background: #FAFAFA;
 }
 .list-c .list-l .list-l-item{
     display: flex;
@@ -392,11 +508,11 @@ export default {
     padding: 20rpx;
     box-sizing: border-box;
     position: relative;
-    border-bottom: 2rpx solid #ccc;
+    color: #999999;
 }
 .list-c .list-l .list-l-item span{
     font-size: 30rpx;
-    color: #000;
+    
     margin-left: 10rpx;
 }
 .list-c .list-l .list-l-count{
@@ -414,7 +530,8 @@ export default {
     color: #fff;
 }
 .active{
-    background-color: white;
+    color: black;
+    background-color: #FFFFFF;
 }
 .active span{
     color: #000;
@@ -435,7 +552,7 @@ export default {
     height: 70rpx;
     align-items: center;
     margin-left: 20rpx;
-    background: #ccc;
+    background: white;
 }
 .list-c .list-r .section span{
     font-size: 30rpx;
@@ -454,6 +571,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    background: white;
 }
 .item .item-l img{
     width: 160rpx;
@@ -783,5 +901,97 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+
+
+
+    /* 右侧容器 */
+    .container .comment-c{
+    display: flex;
+    position: fixed;
+    top: 220rpx;
+    bottom: 0rpx;
+    width: 100%;
+    flex-direction: column;
+    }
+    .container .comment-c .comment-c-header{
+        margin: 20rpx;
+        background:white;
+        text-align: center;
+        padding: 10rpx;
+        border-radius: 15rpx;
+    }
+    .container .comment-c .comment-scroll{
+        display: flex;
+        flex-direction: column;
+        background: white;
+    }
+    .comment{
+        display: flex;
+        border-bottom: 2rpx solid #999;
+    }
+    .comment .comment-l{
+        padding-top: 15rpx;
+        padding-left: 15rpx;
+    }
+    .comment .comment-r{
+        padding: 20rpx 20rpx 20rpx 20rpx;
+        width: 100%;
+    }
+    .comment-r{
+        display: flex;
+        flex-direction: column;
+    }
+    .comment .comment-r .comment-r-haeder{
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        margin-bottom: 10rpx;
+    }
+    .comment-r-haeder .commentName{
+        font-size: 34rpx;
+    }
+    .comment-r-haeder .commentTime{
+        font-size: 26rpx;
+        color: #999999;
+    }
+    .comment-r-middle{
+        width: 100%;
+    }
+    .comment-r-middle .star{
+        display: flex;
+        height: 50rpx;
+        line-height: 50rpx;
+
+    }
+    .comment-r-middle .star i{
+        font-size: 30rpx;
+        margin-left: 5rpx;
+    }
+    .comment-r-middle .star .bright{
+        color: #F2A50C;
+    }
+    .comment-r-middle .star .dark{
+        color: #ccc;
+    }
+    .comment-r-middle .text{
+        font-size: 28rpx;
+        margin-bottom: 10rpx;
+    }
+    .comment-r-middle .img{
+        width: 150rpx;
+        height: 150rpx;
+        background: chocolate;
+    }
+
+
+
+
+    .comment-scroll img{
+        width: 80rpx;
+        height: 80rpx;
+        border-radius: 50%;
+        background: rosybrown;
     }
 </style>

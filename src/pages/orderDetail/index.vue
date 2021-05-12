@@ -1,42 +1,61 @@
 <template>
     <div class="container">
         <div class="detail-status">
-            <span v-if="orderDetail.status==1">订单已完成</span>
-            <span v-else-if="orderDetail.status==0">订单未完成</span>
-            <span v-else>订单未支付</span>
+            <span v-if="orderDetail.userorderFStatus==0">未支付订金</span>
+            <span v-else-if="orderDetail.userorderFStatus==1">已支付订金{{orderDetail.userorderFmoney}}元</span>
+            <span v-else>订单已取消</span>
         </div>
         <div class="detail-c">
             <div class="detail-top">
                 <img src="" alt="">
                 <div class="top-r">
-                    <span>{{orderDetail.shop_name}}</span>
+                    <span>{{orderDetail.departmentfloorName}}</span>
                     <span>></span>
                 </div>
             </div>
-            <div class="detail-content" v-for="(item,index) in orderDetail.product_list" :key="index">
+            <div class="detail-content" v-for="(item,index) in details" :key="index">
                 <div detail-l>
                     <img src="" alt="">
                 </div>
                 <div class="detail-r">
                     <div class="detail-r-top">
-                        <span class="detail-r-name">{{item.dish_name}}</span>
-                        <span class="detail-r-price">￥{{item.dish_price}}</span>
+                        <span class="detail-r-name">{{item.menuName}}</span>
+                        <span class="detail-r-price">￥{{item.menuMoney}}</span>
                     </div>
-                <div class="detail-r-middle">
+                <div class="detail-r-middle" v-show="item.dish_weight">
                     <span>{{item.dish_weight}}克</span>
                 </div>
-                <div class="detail-r-bottom">x{{item.dish_num}}</div>
+                <div class="detail-r-bottom">x{{item.menuTotal}}</div>
                 </div>
             </div>
             <div class="detail-bottom">
                 <div class="detail-b-number">
-                    <span>订单号码：{{orderDetail.order_num}}</span>
-                    <span>订单时间：{{orderDetail.order_time}}</span>
-                    <span>完成订单时间：{{orderDetail.orderfinish_time}}</span>
+                    <span>订单流水号：</span><span class="orderNum">{{orderDetail.userorderId}}</span>
+                    <span>订单创建时间：{{orderDetail.userorderCreatime}}</span>
+                    <span v-if="!orderDetail.useraddress">就餐日期：{{orderDetail.dailymenuCreatime}}</span>
+                    <span v-if="!orderDetail.useraddress">
+                        就餐时段：
+                        <span  v-if="orderDetail.dailymenuTime==0">上午</span>
+                        <span  v-if="orderDetail.dailymenuTime==1">上午</span>
+                        <span  v-if="orderDetail.dailymenuTime==2">上午</span>
+                    </span> 
+                    <div class="address" v-if="orderDetail.useraddress">
+                        <span>配送日期：{{orderDetail.dailymenuCreatime}}</span>
+                        <span>
+                            配送时段：
+                            <span  v-if="orderDetail.dailymenuTime==0">上午</span>
+                            <span  v-if="orderDetail.dailymenuTime==1">上午</span>
+                            <span  v-if="orderDetail.dailymenuTime==2">上午</span>
+                        </span> 
+                        <span>用户名：{{orderDetail.useraddressName}}</span>
+                        <span>配送地址：{{orderDetail.useraddress}}</span>
+                        <span>联系电话：{{orderDetail.useraddressTel}}</span>
+                    </div>
+                             
                 </div>
                 <div class="detail-b-total">
-                    <span>共{{orderDetail.total_count}}件商品,</span>
-                    <span>共计<span class="totalPrice">￥{{orderDetail.total_price}}</span></span>
+                    <span>剩余应付金额{{orderDetail.userorderMmoney}}元，</span>
+                    <span>共计<span class="totalPrice">￥{{orderDetail.userorderSmoney}}</span></span>
                 </div>
             </div>
         </div>
@@ -47,21 +66,36 @@ import {mapState} from 'vuex'
 export default {
     data() {
         return {
+            userorderId:'',
+            orderDetail:'',
+            details:[],
+            creatime:''
+        }
+    },
+    methods: {
+        renderTime(date) {
+            var dateee = new Date(date).toJSON();
+            return new Date(+new Date(dateee) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '') 
         }
     },
     computed:{
         ...mapState(['orderDetail'])
     },
     beforeMount() {
-        // console.log(this.$mp.query.index)
-        this.orderIndex=this.$mp.query.index
-        // console.log(this.orderIndex)
+        this.orderDetail=JSON.parse(this.$mp.query.item)
+        console.log(this.orderDetail)
         
         
     },
     mounted() {
         //获取对应的订单详情
-        this.$store.dispatch('getOrDetailAsyns',this.orderIndex)
+        // this.$store.dispatch('getOrDetailAsyns',this.orderIndex)
+        this.$fly.get(`/wechat/userorderdetail/infos?userorderId=`+this.orderDetail.userorderId)
+        .then(res=>{
+            console.log(res.data.data.records)
+            this.details=res.data.data.records
+            this.creatime=this.renderTime(this.orderDetail.userorderCreatime)
+        })
     },
 }
 </script>
@@ -105,7 +139,7 @@ export default {
     .detail-c .top-r{
         margin-left: 10rpx;
         font-size: 28rpx;
-        color: #ccc;
+
 
     }
     .detail-c .detail-content{
@@ -137,6 +171,13 @@ export default {
         display: flex;
         flex-direction: column;
         margin: 10rpx 0;
+    }
+    .detail-bottom .detail-b-number .orderNum{
+        color: #ccc;
+    }
+    .detail-bottom .detail-b-number .address{
+        display: flex;
+        flex-direction: column;
     }
     .detail-bottom .detail-b-total{
         display: flex;

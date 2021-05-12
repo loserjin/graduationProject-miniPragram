@@ -15,7 +15,7 @@
         <div class="searchList">
             <span class="title">搜索内容</span>
             <scroll-view class="list-c" v-if="status">
-                <div class="listItem" v-for="(item,index) in productList" :key="index" @click="toShopping(item.departmentfloorId)">
+                <div class="listItem" v-for="(item,index) in productList" :key="index" @click="toShopping(item,item.departmentfloorId)">
                     <div class="listItem-l">
                         <img src="" alt="">
                     </div>
@@ -26,6 +26,7 @@
                         </div>  
                         <div class="listItem-r-mid">
                             <span>售价：{{item.menuMoney}}元</span>
+                            <span class="time">预定时间：{{day}}下午</span>
                         </div>
                     </div>
                 </div>
@@ -45,33 +46,51 @@ export default {
             productList:[],
             status:true,
             message:'抱歉，暂时无法找到你所需结果',
-            department:null
+            department:null,
+            day:'',
+
+            param:{
+                id:'',
+                floorId:'',
+                date:'',
+                time:''
+            }
         }
     },
     computed:{
         ...mapState(['department'])
     },
     methods: {
-        toShopping(id){
-            this.$store.commit('getDepartment',id)
-            this.department=this.$store.state.department
-            var that=this
-            wx.setStorage({
-               key:'item',
-               data:that.department
-           })
+        toShopping(item,id){
+            console.log(item)
+            this.param.id=item.departmentId
+            this.param.floorId=item.departmentfloorId
+            this.param.time=item.dailymenuTime
             wx.navigateTo({
-                // 把当前的楼层id传到shopping页
-                url:'/pages/shopping/main?id='+id 
+                url:'/pages/shopping/main?param='+JSON.stringify(this.param)
             })
+        //     this.$store.commit('getDepartment',id)
+        //     this.department=this.$store.state.department
+        //     var that=this
+        //     wx.setStorage({
+        //        key:'item',
+        //        data:that.department
+        //    })
+        //     wx.navigateTo({
+        //         // 把当前的楼层id传到shopping页
+        //         url:'/pages/shopping/main?id='+id 
+        //     })
         },
         cancle(){
             this.product=null
         },
         search(){
-            this.$fly.get('/menu/infos?menuName='+this.product)
+            this.$fly.get(`/wechat/dailymenu/infos`,{
+                "date":this.param.date,
+                "menuName":this.product
+            })
             .then(res=>{
-                this.productList=res.data.data.records
+                this.productList=res.data.data
                 console.log(res)
                 if(this.productList.length==0){
                     this.status=false
@@ -86,6 +105,14 @@ export default {
             })
         }
     },
+    beforeMount() {
+        // console.log(this.$mp.query.param)
+        this.param.date=JSON.parse(this.$mp.query.param).date
+        this.day=this.param.date.slice(5,10)
+
+        // console.log(this.day)
+        // console.log(this.date)
+    },
     onUnload(){
         this.cancle()
         this.productList=[]
@@ -95,7 +122,7 @@ export default {
 </script>
 <style scoped>
 page {
-    color: #ccc;
+    background: white;
 }
 .content{
     display: flex;
@@ -111,7 +138,7 @@ page {
         justify-content: center;
         display: flex;
         flex: 1;
-        background-color: #ccc;
+        background: #e9e9e9;
         height: 60rpx;
         border-radius: 8rpx;
         padding-left: 20rpx;
@@ -199,5 +226,10 @@ page {
 }
 .list-c .listItem-r-mid{
     margin-top: 30rpx;
+    display: flex;
+    justify-content: space-between;
+}
+.list-c .listItem-r-mid .time{
+
 }
 </style>

@@ -3,6 +3,7 @@
     "pages/index/main",
     "pages/department/main",
     "pages/search/main",
+    "pages/orderTime/main",
     "pages/shopping/main",
     "pages/orderDetail/main",
     "pages/order/main",
@@ -14,14 +15,14 @@
     ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "WeChat",
-    "navigationBarTextStyle": "black"
+    "navigationBarBackgroundColor": "#69BCE7",
+    "navigationBarTitleText": "订餐服务",
+    "navigationBarTextStyle": "white"
   },
   "tabBar": {
-    "color": "#999",
+    "color": "#272636",
     "backgroundColor": "#fafafa",
-    "selectedColor": "#333",
+    "selectedColor": "#69BCE7",
     "borderStyle": "white",
 
     "list": [{

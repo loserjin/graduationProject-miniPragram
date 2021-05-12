@@ -17,7 +17,7 @@
             </div>
             <div class="phone">
                 <span>联系电话</span>
-                <input  type="number" v-model="address.useraddressTel">
+                <input  type="number" v-model="address.useraddressTel" @input="checkPhone" maxlength=11>
             </div>
             <div class="address">
                 <span>详细地址</span>
@@ -42,6 +42,7 @@ export default {
                 gender:'',
                 useraddressTel:'',
                 useraddress:'',
+                isPhone:false
             }
            
             // gender:[
@@ -56,17 +57,39 @@ export default {
         //     this.userGender=item.value
         //     console.log(this.userGender)
         // },
+        checkPhone(e){
+            let phone=e.mp.detail.value
+            if(phone.length===11){
+                let checkedPhone=this.checkPhoneNum(phone)
+                this.address.isPhone=checkedPhone
+                console.log(this.address.isPhone)
+            }
+        },
+        checkPhoneNum(phone){
+            if (!/^1(3|4|5|7|8)\d{9}$/.test(phone)) {
+                console.log("手机号无效")
+                wx.showToast({
+                    title:"手机号码不正确",
+                    icon:'error'
+                    })
+                return false
+            } else {
+                console.log("手机号有效")
+                return true
+            }
+        },
         clear(){
             this.address.useraddressId=""
             this.address.useraddressName="",
             this.address.useraddressTel="",
-            this.address.useraddress=""
+            this.address.useraddress="",
+            this.address.isPhone=false
         },
         submit(){
-            if (this.address.useraddressName == "" || this.address.useraddressTel == "" || this.address.useraddress == "")
+            if (this.address.useraddressName == "" || this.address.isPhone == false || this.address.useraddress == "")
             {
                 wx.showToast({
-                    title: '请输入完整信息',
+                    title: '请输入有效信息',
                     icon: 'error',
                     duration: 2000
                 })
@@ -90,7 +113,6 @@ export default {
                                         url: '/pages/address/main'
                                     })
                                     }, 1000)
-                                    
                                 }
                             })
                         }
@@ -131,18 +153,19 @@ export default {
         }
     },
     beforeMount() {
-        var that=this
-        // console.log(this.$mp)
-        // if(this.$mp.query.id){
-        // }
-        wx.getStorage({
-            key:'address',
-            success:(res)=>{
-                console.log(res.data)
-                that.address=res.data
-                console.log(that.address)
-            }
-        })
+        if(this.$mp.query.address){
+            this.address=JSON.parse(this.$mp.query.address)
+            console.log(this.address)
+        }
+
+        // wx.getStorage({
+        //     key:'address',
+        //     success:(res)=>{
+        //         console.log(res.data)
+        //         that.address=res.data
+        //         console.log(that.address)
+        //     }
+        // })
     },
     onUnload(){
         wx.removeStorage({
@@ -151,6 +174,8 @@ export default {
                 console.log('删除address')
             }
         })
+        this.clear()
+
     },
 }
 </script>
