@@ -2,12 +2,12 @@
     <div class="container">
         <div class="detail-status">
             <span v-if="orderDetail.userorderFStatus==0">未支付订金</span>
-            <span v-else-if="orderDetail.userorderFStatus==1">已支付订金{{orderDetail.userorderFmoney}}元</span>
+            <span v-else-if="orderDetail.userorderFStatus==1">已支付订金</span>
             <span v-else>订单已取消</span>
         </div>
         <div class="detail-c">
             <div class="detail-top">
-                <img src="" alt="">
+                <!-- <img src="" alt=""> -->
                 <div class="top-r">
                     <span>{{orderDetail.departmentfloorName}}</span>
                     <span>></span>
@@ -15,7 +15,7 @@
             </div>
             <div class="detail-content" v-for="(item,index) in details" :key="index">
                 <div detail-l>
-                    <img src="" alt="">
+                    <img :src="item.menuPic" alt="">
                 </div>
                 <div class="detail-r">
                     <div class="detail-r-top">
@@ -117,6 +117,7 @@ export default {
         align-items: center;
         height: 80rpx;
         margin: 0 30rpx;
+        color: coral;
     }
     .detail-c{
         display: flex;
@@ -138,7 +139,10 @@ export default {
     }
     .detail-c .top-r{
         margin-left: 10rpx;
-        font-size: 28rpx;
+        font-size: 35rpx;
+        font-weight: bold;
+        height: 50rpx;
+        line-height: 50rpx;
 
 
     }

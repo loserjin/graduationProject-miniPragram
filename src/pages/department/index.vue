@@ -62,7 +62,7 @@
                 </div>
             </div>
         <div class="context" v-for="(item,index) in departments" :key="index" @tap="toShopping(item,item.departmentfloorId)">
-            <div class="context-l"><img src="" alt=""></div>
+            <div class="context-l"><img :src="item.departmentfloorPic" alt=""></div>
             <div class="context-r">
                 <span class="title">{{item.departmentfloorName}}</span>
                 <span class="desc">南北风味尽在掌握</span>
@@ -149,7 +149,7 @@ export default {
             var util=new Date()
             var year=util.getFullYear()
             var month=util.getMonth()+1
-            var sday=util.getDate()+3
+            var sday=util.getDate()+2
             var sdata=year+`-`+month+`-`+sday
             var edata=year+`-`+12+`-`+31
             this.startTime=sdata

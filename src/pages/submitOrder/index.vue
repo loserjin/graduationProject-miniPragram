@@ -208,6 +208,18 @@ export default {
                     })
                 })
         },
+        //外卖全款支付接口
+        payMent(orderId){
+            this.$fly.post(`/wechat/userorder/changestatus?userorderStatus=1&userorderId=`+orderId)
+                .then(orderRes=>{
+                    console.log(orderRes)
+                    wx.showToast({
+                    title: '订单支付成功',
+                    icon: 'success',
+                    duration: 2000
+                    })
+                })
+        },
         //到店就餐支付接口
         payClick1(){
             // console.log(this.$store.state.myCart)
@@ -280,16 +292,50 @@ export default {
                     "useraddress":this.address.useraddress
                 }).then(res=>{
                     if(res.data.code==200){
-                        wx.showToast({
-                        title: '订单提交成功',
-                        icon: 'success',
-                        duration: 2000
+                        var orderId=res.data.data
+                        wx.showModal({
+                            title:'请支付金额',
+                            content:'如果超时将取消订单',
+                            success:(res)=>{
+                                if(res.cancel){
+                                console.log('未支付，跳转订单页')
+                                wx.showToast({
+                                title: '订单提交成功',
+                                icon: 'success',
+                                duration: 2000
+                                })
+                                setTimeout(function () {
+                                    wx.switchTab({
+                                    url:`/pages/order/main`
+                                })
+                            }, 1000)
+                                }else if(res.confirm){
+                                this.payMent(orderId)
+                                console.log('已支付，跳转订单页')
+                                wx.showToast({
+                                    title: '订单支付成功',
+                                    icon: 'success',
+                                    duration: 2000
+                                    })
+                                    setTimeout(function () {
+                                        wx.switchTab({
+                                        url:`/pages/order/main`
+                                    })
+                                }, 1000)
+                                }   
+                            },        
                         })
-                        setTimeout(function () {
-                            wx.switchTab({
-                            url:`/pages/order/main`
-                        })
-                    }, 1000)
+
+                        // wx.showToast({
+                        // title: '订单提交成功',
+                        // icon: 'success',
+                        // duration: 2000
+                        // })
+                        // setTimeout(function () {
+                        //     wx.switchTab({
+                        //     url:`/pages/order/main`
+                        //     })
+                        // }, 1000)
                         
                     }
                 })

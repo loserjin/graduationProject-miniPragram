@@ -7,6 +7,7 @@
     "pages/shopping/main",
     "pages/orderDetail/main",
     "pages/order/main",
+    "pages/addComment/main",
     "pages/submitOrder/main",
     "pages/mine/main",
     "pages/address/main",

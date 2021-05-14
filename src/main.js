@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import App from './App'
 import store from './store/store'
-import '../static/iconfont.css'
+// import '../static/iconfont.css'
+import './pages/style/font/iconfont.css'
 
 import axios from 'axios'
 import qs from 'qs'

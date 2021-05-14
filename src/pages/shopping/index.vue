@@ -36,8 +36,7 @@
                 <!-- 商品列表分类 -->
                 <scroll-view class="list-l" :scroll-y="true">
                     <div class="list-l-item" :class="{active:index===tagIndex}" v-for="(item,index) in type" :key="index" @click="categoryClick(item.typeId,index)">
-                        <span>{{item.typeName}}</span>
-                        
+                        <span>{{item.typeName}}</span>          
                     </div>
                 </scroll-view>
                 <!-- 商品内容选择 -->
@@ -48,7 +47,7 @@
                     <div class="item-list" v-for="(item,index) in food" :key="index" @click=showFood(item)>
                         <div class="item">
                             <div class="item-l">
-                                <img src="" alt="">
+                                <img :src="item.menuPic" alt="">
                             </div>
                             <div class="item-r">
                                 <span class="title">{{item.menuName}}</span>
@@ -115,7 +114,7 @@
             <div class="previewModal" v-if="isShow">
                 <div class="modal-c">
                 <div class="header-p">
-                    <img class="item-img" src="" alt="">
+                    <img class="item-img" :src="foodModal.menuPic" alt="">
                     <span class="title">{{foodModal.menuName}}</span>
                     <div>
                     <span class="desc" v-for="(item,i) in foodModal.menucomponents" :key="i">{{item.componentName}}</span>
@@ -963,7 +962,6 @@ export default {
         display: flex;
         height: 50rpx;
         line-height: 50rpx;
-
     }
     .comment-r-middle .star i{
         font-size: 30rpx;

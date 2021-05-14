@@ -2,9 +2,8 @@
     <div class="container">
         <scroll-view class="scroll">
             <div class="departmentCard" v-for="(item,index) in department" :key="index" @click="tofloor(item.departmentId)">
-                <div class="img">
-                    <div class="departName">{{item.departmentName}}</div>
-                </div>
+                <img class="img" :src="item.departmentPic"/>
+                <div class="departName">{{item.departmentName}}</div>
             </div>
         </scroll-view>
 
@@ -66,10 +65,11 @@ export default {
         margin-top: 10rpx 0;
     }
     .departmentCard{
-        margin: 20rpx;
+        margin: 30rpx;
         border: 4rpx;
-        box-shadow: 5px 5px 5px #999;
+        box-shadow: 5px 5px 5px rgb(109, 109, 109);
         border-radius: 20rpx;
+        position: relative;
     }
     .img{
         width: 100%;
@@ -82,6 +82,9 @@ export default {
         /* opacity: 90%; */
     }
     .departName{
+        position: absolute;
+        top: 1rpx;
+        right: 20rpx;
         font-weight: 1000;
         font-size: 50rpx;
         display: flex;
