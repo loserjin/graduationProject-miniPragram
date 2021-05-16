@@ -97,9 +97,18 @@ export default {
                     "departmentName": this.param.name,
                     "departmentfloorId": this.param.floorId,
                     "departmentfloorName": this.param.floorName,
+                    // "departmentId": 2,
+                    // "departmentName": "鸿园",
+                    // "departmentfloorId": 3,
+                    // "departmentfloorName": "鸿园2楼",
             })
             .then(res=>{
                 console.log(res.data)
+                setTimeout(function () {
+                  wx.switchTab({
+                    url: '/pages/order/main'
+                })
+                }, 1000)
             })
         }
     },

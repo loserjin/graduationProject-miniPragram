@@ -6,7 +6,7 @@
         <div class="header-c">
             <div class="header">
                 <div class="header-l">
-                   <img class="shop-logo" src="" alt="">
+                   <img class="shop-logo" :src="department.departmentfloorPic" alt="">
                 </div>
                 <div class="header-r">
                     <div class="header-r-title">
@@ -51,9 +51,9 @@
                             </div>
                             <div class="item-r">
                                 <span class="title">{{item.menuName}}</span>
-                                <span class="description">{{item.menuFMoney}}</span>
+                                <span class="description">订金：{{item.menuFMoney}}</span>
                                 <div class="item-r-bottom">
-                                    <span class="price">{{item.menuMoney}}</span>
+                                    <span class="price">标价：{{item.menuMoney}}</span>
                                     <div class="change-num">
                                         <div class="btn-reduce" @click.stop="removeToCart(item)" v-if="item.count">
                                             <i class="iconfont">&#xe6b8;</i>
@@ -204,8 +204,8 @@ export default {
         return {
             // 当前饭堂信息
             department:{},
-            cate:2,
-            cates:2,
+            cate:1,
+            cates:1,
             tagIndex:0, 
             //购物车显示
             isCart:false,
@@ -329,6 +329,7 @@ export default {
              var param=JSON.parse(this.$mp.query.param)
             this.floorId=parseInt(param.floorId)
             this.param=param
+            this.department=param
             console.log(this.param)
         }else{
             wx.getStorage({
@@ -378,14 +379,14 @@ export default {
                 this.food=this.filterFoods(this.foods,this.typeId) 
             }  
         })
-        // this.$fly.get(`/wechat/discuss/infos?departmentId=`+ this.param.id+`&&departmentfloorId=`+this.param.floorId)
-        // .then(res=>{
-        //     this.commentList=res.data.data
-        // })
-        this.$fly.get(`/wechat/discuss/infos?departmentId=4&&departmentfloorId=8`)
+        this.$fly.get(`/wechat/discuss/infos?departmentId=`+ this.param.id+`&&departmentfloorId=`+this.param.floorId)
         .then(res=>{
             this.commentList=res.data.data
         })
+        // this.$fly.get(`/wechat/discuss/infos?departmentId=4&&departmentfloorId=8`)
+        // .then(res=>{
+        //     this.commentList=res.data.data
+        // })
     },
     
 }
@@ -577,6 +578,7 @@ export default {
     height: 160rpx;
     background-size: cover;
     background: green;
+    border-radius: 15rpx;
 }
 .item .item-r{
     display: flex;

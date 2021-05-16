@@ -13,8 +13,8 @@
         <div class="tab-c">
             <!-- 到店就餐 -->
             <div v-if="tab==1" class="shopDetail">
-                <span class="shopAddress">商家地址</span>
-                <span class="address">广东省湛江市赤坎区寸金路29号</span>
+                <!-- <span class="shopAddress">商家地址</span>
+                <span class="address">广东省湛江市赤坎区寸金路29号</span> -->
                 <!-- <div class="mealTime">
                     <span>就餐时间：</span>
                     <picker @change="bindMultiPickerChange" @columnchange="bindMultiPickerColumnChange" mode='multiSelector' :value="multiIndex" :range="multiArray">
@@ -26,15 +26,15 @@
                 </div> -->
                 <div class="detail-c">
                     <div class="detail-top">
-                        <img src="" alt="">
+                        <img :src="department.departmentfloorPic" alt="">
                         <div class="top-r">
                             <span>{{department.departmentfloorName}}</span>
                         </div>
                     </div>
                     <scroll-view class="swiper" :scroll-y="true">
                         <div class="detail-content" v-for="(item,index) in myCart" :key="index">
-                            <div detail-l >
-                                <img src="" alt="">
+                            <div class="detail-l" >
+                                <img :src="item.menuPic" alt="">
                             </div>
                             <div class="detail-r">
                                 <div class="detail-r-top">
@@ -69,7 +69,7 @@
                 </div>
                 <div class="pay-btn" @click="payClick1">
                     <div class="top">
-                        <span class="s-l">微信支付定金</span>
+                        <span class="s-l">微信支付订金</span>
                         <span class="s-r">￥{{totalFPrice}}</span>
                         
                     </div>
@@ -100,15 +100,15 @@
                 </div> -->
                 <div class="detail-c">
                     <div class="detail-top">
-                        <img src="" alt="">
+                        <img :src="department.departmentfloorPic" alt="">
                         <div class="top-r">
                             <span>{{department.departmentfloorName}}</span>
                         </div>
                     </div>
                     <scroll-view class="swiper" :scroll-y="true">
                         <div class="detail-content" v-for="(item,index) in myCart" :key="index">
-                            <div detail-l>
-                                <img src="" alt="">
+                            <div class="detail-l">
+                                <img :src="item.menuPic" alt="">
                             </div>
                             <div class="detail-r">
                                 <div class="detail-r-top">
@@ -167,7 +167,7 @@ export default {
             multiArray: [day, time],
             multiIndex: [1, 0],
             //配送费
-            orderprice:1,
+            orderprice:0,
             tab:1,
             department:{},
             dailymenuId:[],
@@ -201,11 +201,20 @@ export default {
             this.$fly.post(`/wechat/userorder/changeFstatus?userorderFStatus=1&&userorderId=`+orderId)
                 .then(orderRes=>{
                     console.log(orderRes)
-                    wx.showToast({
-                    title: '订金支付成功',
-                    icon: 'success',
-                    duration: 2000
-                    })
+                    if(orderRes.data.code==200){
+                        wx.showToast({
+                            title: '订金支付成功',
+                            icon: 'success',
+                            duration: 2000
+                        })
+                    }else if(orderRes.data.code==406){
+                        wx.showToast({
+                            title: '订金支付失败',
+                            icon: 'error',
+                            duration: 2000
+                        })
+                    }
+                    
                 })
         },
         //外卖全款支付接口
@@ -213,11 +222,19 @@ export default {
             this.$fly.post(`/wechat/userorder/changestatus?userorderStatus=1&userorderId=`+orderId)
                 .then(orderRes=>{
                     console.log(orderRes)
-                    wx.showToast({
-                    title: '订单支付成功',
-                    icon: 'success',
-                    duration: 2000
+                    if(orderRes.data.code==200){
+                        wx.showToast({
+                        title: '订单支付成功',
+                        icon: 'success',
+                        duration: 2000
                     })
+                    }else{
+                        wx.showToast({
+                            title: '订单支付失败',
+                            icon: 'error',
+                            duration: 2000
+                        })
+                    }
                 })
         },
         //到店就餐支付接口
@@ -229,6 +246,7 @@ export default {
                 "dailymenuId":this.dailymenuId,  
                 "menuTotal":this.menuTotal,
             }).then(res=>{
+                console.log(res)
                 if(res.data.code==200){
                     console.log(res.data.data)
                     var orderId=res.data.data
@@ -263,9 +281,19 @@ export default {
                             }, 1000)
                             }   
                         },        
+                    }) 
+                }else if(res.data.code==406){
+                    // console.log(res)
+                    wx.showToast({
+                        title: '订金支付失败',
+                        icon: 'error',
+                        duration: 2000
                     })
-                    
-                      
+                    setTimeout(function () {
+                                    wx.switchTab({
+                                    url:`/pages/order/main`
+                                })
+                            }, 1000)
                 }
             })
             .catch(err=>{
@@ -289,7 +317,8 @@ export default {
                     "useraddressId":this.address.useraddressId,
                     "useraddressTel":this.address.useraddressTel,
                     "useraddressName":this.address.useraddressName,
-                    "useraddress":this.address.useraddress
+                    "useraddress":this.address.useraddress,
+                    "gender":this.address.gender
                 }).then(res=>{
                     if(res.data.code==200){
                         var orderId=res.data.data
@@ -388,6 +417,10 @@ export default {
     beforeMount() {
         var that=this
         this.param=JSON.parse(this.$mp.query.param)
+        if(this.$mp.query.param){
+            console.log(this.$mp.query.param)
+            this.department=this.param
+        }
         wx.getStorage({
             key: 'item',
             success:(res)=>{
@@ -561,6 +594,7 @@ export default {
     .detail-content .detail-l img{
         width: 118rpx;
         height: 118rpx;
+        border-radius: 15rpx;
     }
     .detail-content .detail-r{
         margin-left: 15rpx;

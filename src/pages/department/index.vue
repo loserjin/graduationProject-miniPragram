@@ -29,7 +29,7 @@
         <div class='adsec'>
             <i class="iconfont">&#xe70a;</i>
             <text class='text'>公告：</text>
-            <swiper class="swiper_container" autoplay="false" circular="true" interval="3000">
+            <swiper class="swiper_container" autoplay="false" circular="true" interval="1000">
                 <block v-for="(item,index) in msgList" :key="index">
                 <div  @click="showAdsec(item)">
                     <swiper-item>
@@ -55,7 +55,7 @@
                 <div class="date-c">
                     <picker mode="date" value="date" :start=startTime  :end=endTime  @change="bindDateChange">
                         <view class="picker">
-                            <span>当前日期选择: </span>
+                            <span>当前日期: </span>
                             <span>{{param.date}}</span>
                         </view>
                     </picker>
@@ -337,6 +337,7 @@ export default {
     .context .context-l img{
         width: 150rpx;
         height: 150rpx;
+        border-radius: 15rpx;
     }
     .department-c .context .context-r{
         display: flex;

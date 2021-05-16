@@ -17,7 +17,7 @@
             <scroll-view class="list-c" v-if="status">
                 <div class="listItem" v-for="(item,index) in productList" :key="index" @click="toShopping(item,item.departmentfloorId)">
                     <div class="listItem-l">
-                        <img src="" alt="">
+                        <img :src="item.menuPic" alt="">
                     </div>
                     <div class="listItem-r">
                         <div class="listItem-r-top">
@@ -26,7 +26,10 @@
                         </div>  
                         <div class="listItem-r-mid">
                             <span>售价：{{item.menuMoney}}元</span>
-                            <span class="time">预定时间：{{day}}下午</span>
+                            <span class="time">预定时间：{{day}}<span v-if="item.dailymenuTime==0">上午</span>
+                            <span v-if="item.dailymenuTime==1">中午</span>
+                            <span v-if="item.dailymenuTime==2">下午</span>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -51,9 +54,12 @@ export default {
 
             param:{
                 id:'',
+                departmentName:'',
                 floorId:'',
+                departmentfloorName:'',
                 date:'',
-                time:''
+                time:'',
+                departmentfloorPic:''
             }
         }
     },
@@ -66,6 +72,9 @@ export default {
             this.param.id=item.departmentId
             this.param.floorId=item.departmentfloorId
             this.param.time=item.dailymenuTime
+            this.param.departmentName=item.departmentName
+            this.param.departmentfloorName=item.departmentfloorName
+            this.param.departmentfloorPic=item.departmentfloorPic
             wx.navigateTo({
                 url:'/pages/shopping/main?param='+JSON.stringify(this.param)
             })

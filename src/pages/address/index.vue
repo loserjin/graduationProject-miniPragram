@@ -4,7 +4,7 @@
             <div class="address-c" v-for="(item,index) in areaList" :key="index">
                 <div class="basic-c">
                     <span class="name">{{item.useraddressName}}</span>
-                    <span class="gender" v-show="gender">{{item.gender==1?'男':'女'}}</span>
+                    <span class="gender" v-if="item.gender">{{item.gender=='男'?'男':'女'}}</span>
                     <span class="phone">{{item.useraddressTel}}</span>
                 </div>
                 <div class="addressDetail">
@@ -22,7 +22,6 @@
             <button @click="toAdd">添加地址</button>
             <button class="wxaddress" @click="wxAddress">微信添加地址</button>
         </div>
-        
     </div>
 </template>
 <script>
@@ -116,6 +115,7 @@ export default {
     onShow(){
         this.$fly.get(`/useraddress/infos?size=99`)
             .then(res=>{
+                console.log(res)
                 this.areaList=res.data.data.records
         })
     }

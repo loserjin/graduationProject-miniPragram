@@ -12,6 +12,7 @@
     "pages/mine/main",
     "pages/address/main",
     "pages/addAddress/main",
+    "pages/qrcode/main",
     "pages/logs/main"
     ],
   "window": {

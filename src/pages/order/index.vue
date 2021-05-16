@@ -55,8 +55,11 @@
                     <div class="btn">
                         <span v-if="item.userorderMStatus==0" @click="clearOrder(item.userorderId)">取消订单</span>
                     </div>
-                    <div class="btn btn-s" v-if="item.userorderMStatus==0" @tap="showCode(item.userorderId)">
+                    <div class="btn btn-s" v-if="item.userorderMStatus==0" @tap="showCode(item,item.userorderId)">
                         <span>扫码就餐</span>
+                    </div>
+                    <div class="btn" v-if="item.userorderMStatus==0">
+                        <span  @click="showQr(item)">出示二维码</span>
                     </div>
                     <div class="btn" v-if="item.userorderMStatus==1" @tap="deleteOrder(item.userorderId)">
                         <span>删除订单</span>
@@ -104,6 +107,7 @@
                     <div class="btn">
                         <span  @click="clearOrder(item.userorderId)">取消订单</span>
                     </div>
+                    
                     <!-- <div class="btn"  @tap="deleteOrder(item.userorderId)">
                         <span>删除订单</span>
                     </div>  -->
@@ -124,7 +128,8 @@
                         </div> -->
                         <div class="comment-r">
                             <div class="comment-r-haeder">
-                                <div class="commentName">{{item.discussName}}</div>
+                                <!-- <div class="commentName" v-if="item.discussName=='chubaise'">匿名</div> -->
+                                <div class="commentName" >{{item.discussName}}</div>
                                 <div class="commentTime">{{item.discussCreatime}}</div>
                             </div>
                             <div class="comment-r-middle">
@@ -359,14 +364,15 @@ export default {
             })
         },
         //尾款支付
-        showCode(id){
-            this.$fly.post(`/wechat/userorder/changestatus?userorderStatus=1&userorderId=`+id)
+        showCode(item,id){
+            // console.log(item)
+            this.$fly.post(`/wechat/userorder/changeMstatus?userorderMStatus=1&userorderId=`+id)
             .then(res=>{
                 console.log(res)
                 if(res.data.code=200){
                     if(res.data.data="本订单已经超出允许操作的时间"){
                         wx.showToast({
-                        title: '尾款支付超时',
+                        title: '就餐时间未到',
                         icon: 'error',
                         duration: 2000
                     })
@@ -411,17 +417,10 @@ export default {
                             // }else{
                             //     console.log("2")
                             // }
-                            if(orderRes.data.code=200){
-                                if(orderRes.data.data="本订单已经超出允许操作的时间"){
-                                     wx.showToast({
-                                        title: '订单支付超时',
-                                        icon: 'error',
-                                        duration: 2000
-                                    })
-                                }else{
+                            if(orderRes.data.code=200){ 
                                     wx.showToast({
-                                    title: '订金支付成功',
-                                    icon: 'success',
+                                    title: '订单支付成功',
+                                    icon: 'error',
                                     duration: 2000
                                 })
                                 this.$fly.get(`/wechat/userorder/infos`)
@@ -431,7 +430,6 @@ export default {
                                     this.takeoutOrder=this.filterTakeOut(this.orderList)
                                     this.refundList=this.filterRefund(this.orderList)
                                 })
-                                }    
                             }else{
                                wx.showToast({
                                     title: '订金支付失败',
@@ -450,19 +448,35 @@ export default {
             this.$fly.post(`/wechat/userorder/changestatus?userorderStatus=1&userorderId=`+orderId)
                 .then(orderRes=>{
                     console.log(orderRes)
-                    wx.showToast({
-                    title: '订单支付成功',
-                    icon: 'success',
-                    duration: 2000
-                    })
-                    this.$fly.get(`/wechat/userorder/infos`)
-                    .then(res=>{
-                        this.orderList=res.data.data
-                        this.shopOrder=this.filterShopConsumption(this.orderList)
-                        this.takeoutOrder=this.filterTakeOut(this.orderList)
-                        this.refundList=this.filterRefund(this.orderList)
-                    })
+                    if(orderRes.data.code==200){
+                        wx.showToast({
+                            title: '订单支付成功',
+                            icon: 'success',
+                            duration: 2000
+                        })
+                        this.$fly.get(`/wechat/userorder/infos`)
+                        .then(res=>{
+                            this.orderList=res.data.data
+                            this.shopOrder=this.filterShopConsumption(this.orderList)
+                            this.takeoutOrder=this.filterTakeOut(this.orderList)
+                            this.refundList=this.filterRefund(this.orderList)
+                        })
+                    }else if(orderRes.data.code==406){
+                        wx.showToast({
+                            title: '订单支付失败',
+                            icon: 'success',
+                            duration: 2000
+                        })
+                    }
+                    
+                    
                 })
+        },
+        //出示二维码
+        showQr(item){
+            wx.navigateTo({
+                url:`/pages/qrcode/main?id=`+item.userorderId
+            })
         },
 
         //请求我的评论数据
@@ -659,10 +673,15 @@ export default {
         width: 100%;
         display: flex;
         flex-direction: column;
+        display: flex;
+        flex-direction: column;
+        background: #FDFDFD;
+        margin-top: 20rpx;
     }
     .comment{
         margin: 20rpx;
         border-bottom: 2rpx solid #ccc;
+        
     }
     .comment-r{
         width: 100%;

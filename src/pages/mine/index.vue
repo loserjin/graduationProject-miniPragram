@@ -5,10 +5,10 @@
             <button class="logButton">{{userInfo.nickName?userInfo.nickName:'登录'}}</button>
         </div>
         <div class="cardList">
-            <div class="qrCode">
+            <!-- <div class="qrCode">
                 <span>二维码就餐</span>
                 <span class="more">></span>
-            </div>
+            </div> -->
             <div class="qrCode" @click="toAddress">
                 <span>我的地址</span>
                 <span class="more">></span>

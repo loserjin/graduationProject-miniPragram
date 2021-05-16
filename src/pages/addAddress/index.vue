@@ -6,14 +6,14 @@
                     <span>姓名</span>
                     <input type="text" maxlength="10" v-model="address.useraddressName">
                 </div>
-                <!-- <div class="gender">
+                <div class="gender">
                     <span>性别</span>
                     <radio-group class="group">
                         <span v-for="(item,index) in gender" :key=index @click="choiceGender(item)">
                             <radio>{{item.name}}</radio>
                         </span>
                     </radio-group>
-                </div>  -->
+                </div> 
             </div>
             <div class="phone">
                 <span>联系电话</span>
@@ -39,24 +39,24 @@ export default {
             address:{
                 useraddressId:'',
                 useraddressName:'',
-                gender:'',
+                gender:1,
                 useraddressTel:'',
                 useraddress:'',
                 isPhone:false
-            }
+            },
            
-            // gender:[
-            //     {value:'1',name:'男'},
-            //     {value:'2',name:'女'}
-            // ],
+            gender:[
+                {value:'1',name:'男'},
+                {value:'2',name:'女'}
+            ],
             
         }
     },
     methods: {
-        // choiceGender(item){
-        //     this.userGender=item.value
-        //     console.log(this.userGender)
-        // },
+        choiceGender(item){
+            this.address.gender=item.name
+            console.log(this.address.gender)
+        },
         checkPhone(e){
             let phone=e.mp.detail.value
             if(phone.length===11){
@@ -101,6 +101,8 @@ export default {
                     "useraddressTel":this.address.useraddressTel,
                     "useraddress":this.address.useraddress
                     }).then(res=>{
+                        console.log("添加")
+                            console.log(res)
                         if(res.status==200){
                             wx.showToast({
                                 title: '添加成功',
@@ -125,6 +127,8 @@ export default {
                         "useraddressTel":this.address.useraddressTel,
                         "useraddress":this.address.useraddress
                         }).then(res=>{
+                            console.log("编辑")
+                            console.log(res)
                             if(res.status==200){
                                 wx.showToast({
                                     title: '修改成功',

@@ -54,8 +54,8 @@
                              
                 </div>
                 <div class="detail-b-total">
-                    <span>剩余应付金额{{orderDetail.userorderMmoney}}元，</span>
-                    <span>共计<span class="totalPrice">￥{{orderDetail.userorderSmoney}}</span></span>
+                    <!-- <span>剩余应付金额{{orderDetail.userorderMmoney}}元，</span> -->
+                    <span>已付，共计<span class="totalPrice">￥{{orderDetail.userorderSmoney}}</span></span>
                 </div>
             </div>
         </div>
